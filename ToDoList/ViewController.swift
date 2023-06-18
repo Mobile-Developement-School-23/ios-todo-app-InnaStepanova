@@ -11,9 +11,9 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+//   Это директория где находится папка Documents в которую сохраняются json и csv
+        print(NSHomeDirectory())
+        view.backgroundColor = .red
     }
-
-
 }
 

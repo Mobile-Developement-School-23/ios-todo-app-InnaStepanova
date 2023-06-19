@@ -49,6 +49,7 @@ enum Resources {
         static let save = "Сохранить"
         static let importance = "Важность"
         static let doBefore = "Сделать до"
+        static let delete = "Удалить"
     }
 }
 

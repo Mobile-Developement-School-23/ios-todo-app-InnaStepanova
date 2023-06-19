@@ -54,7 +54,7 @@ final class ImportanceView: UIView {
     private lazy var doBeforeSwitch: UISwitch = {
         let sw = UISwitch()
         sw.translatesAutoresizingMaskIntoConstraints = false
-        sw.isSelected = true
+        sw.addTarget(self, action: #selector(switchChanget), for: .touchUpInside)
         return sw
     }()
     
@@ -66,8 +66,37 @@ final class ImportanceView: UIView {
         return view
     }()
     
+    private lazy var border2: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = Resources.Colors.seporator
+        view.bounds.size.height = 1
+        view.isHidden = true
+        return view
+    }()
+    
+    private lazy var calenderView: UICalendarView = {
+        let calendarView = UICalendarView()
+        calendarView.translatesAutoresizingMaskIntoConstraints = false
+        calendarView.calendar = .current
+        calendarView.locale = .current
+        calendarView.isHidden = true
+        return calendarView
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 0
+        return stackView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        let dateSelection = UICalendarSelectionSingleDate(delegate: self)
+        calenderView.selectionBehavior = dateSelection
         self.layer.cornerRadius = 16
         self.backgroundColor = Resources.Colors.secondaryBack
         addViews()
@@ -80,14 +109,36 @@ final class ImportanceView: UIView {
     
     private func addViews() {
         addSubview(importanceLabel)
-        addSubview(doBeforeLabel)
+        addSubview(stackView)
         addSubview(importanceSegmentedControl)
-        addSubview(dateButton)
         addSubview(doBeforeSwitch)
         addSubview(border)
+        stackView.addArrangedSubview(doBeforeLabel)
+        stackView.addArrangedSubview(dateButton)
+        stackView.addArrangedSubview(border2)
+        stackView.addArrangedSubview(calenderView)
+    }
+    
+    @objc private func switchChanget(sender: UISwitch) {
+        if sender .isOn {
+            stackView.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 8).isActive = true
+            dateButton.isHidden = false
+            border2.isHidden = false
+            calenderView.isHidden = false
+            layoutIfNeeded()
+            print("Включили")
+        } else {
+            stackView.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 16).isActive = true
+            dateButton.isHidden = true
+            border2.isHidden = true
+            calenderView.isHidden = true
+            layoutIfNeeded()
+            print("Выключили")
+        }
     }
     
     private func setConstraints() {
+        
         NSLayoutConstraint.activate([
             importanceLabel.topAnchor.constraint(equalTo: topAnchor, constant: 17),
             importanceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
@@ -98,13 +149,26 @@ final class ImportanceView: UIView {
             border.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             border.heightAnchor.constraint(equalToConstant: 1),
             border.widthAnchor.constraint(equalToConstant: 100),
-            doBeforeLabel.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 17),
-            doBeforeLabel.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
-            doBeforeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -17),
+            border2.heightAnchor.constraint(equalToConstant: 1),
+            border2.widthAnchor.constraint(equalToConstant: 500),
+//            doBeforeLabel.topAnchor.constraint(equalTo: border.bottomAnchor, constant: doBeforeTopConstraint),
+//            doBeforeLabel.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
 //            dateButton.topAnchor.constraint(equalTo: doBeforeLabel.bottomAnchor),
 //            dateButton.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
-            doBeforeSwitch.centerYAnchor.constraint(equalTo: doBeforeLabel.centerYAnchor),
-            doBeforeSwitch.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12)
+            doBeforeSwitch.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 13),
+            doBeforeSwitch.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            stackView.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 17),
+            stackView.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
         ])
     }
+}
+extension ImportanceView: UICalendarSelectionSingleDateDelegate {
+    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+        calenderView.isHidden = true
+        border2.isHidden = true
+    }
+    
+    
 }

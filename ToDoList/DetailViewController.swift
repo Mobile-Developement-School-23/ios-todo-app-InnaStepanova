@@ -33,6 +33,21 @@ class DetailViewController: UIViewController {
     }()
     
     private lazy var importanceView = ImportanceView()
+    
+    private lazy var deleteButton: UIButton = {
+        let button = UIButton()
+        button.configuration = .filled()
+        button.configuration?.title = Resources.Strings.delete
+        button.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
+        button.configuration?.baseForegroundColor = Resources.Colors.tertiary
+        button.titleLabel?.font = Resources.Fonts.sfProText400(with: 30)
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.configuration?.contentInsets.top = 17
+        button.configuration?.contentInsets.bottom = 17
+        button.layer.cornerRadius = 16
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +61,7 @@ class DetailViewController: UIViewController {
         view?.addSubview(containerTextView)
         containerTextView.addSubview(textView)
         view.addSubview(importanceView)
+        view.addSubview(deleteButton)
     }
     
     private func setConstraints() {
@@ -64,14 +80,18 @@ class DetailViewController: UIViewController {
             
             importanceView.topAnchor.constraint(equalTo: containerTextView.bottomAnchor, constant: 16),
             importanceView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            importanceView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            importanceView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            deleteButton.topAnchor.constraint(equalTo: importanceView.bottomAnchor, constant: 16),
+            deleteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            deleteButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
     
     private func configureNavBar() {
         title = Resources.Strings.detailTitle
         navigationController?.navigationBar.standardAppearance.titleTextAttributes = [
-            .foregroundColor: Resources.Colors.primaryLabel,
+            .foregroundColor: Resources.Colors.primaryLabel as Any,
             .font: Resources.Fonts.sfProText600(with: 17)]
         addNavBarButton(at: .left, and: Resources.Strings.cancel)
         addNavBarButton(at: .right, and: Resources.Strings.save)

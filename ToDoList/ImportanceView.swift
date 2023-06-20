@@ -48,6 +48,7 @@ final class ImportanceView: UIView {
         button.setTitleColor(Resources.Colors.blueTodo, for: .normal)
         button.titleLabel?.font = Resources.Fonts.sfProText600(with: 13)
         button.isHidden = true
+        button.addTarget(self, action: #selector(dateButtonPressed), for: .touchUpInside)
         return button
     }()
     
@@ -93,6 +94,15 @@ final class ImportanceView: UIView {
         return stackView
     }()
     
+    private lazy var stackView2: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 0
+        return stackView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         let dateSelection = UICalendarSelectionSingleDate(delegate: self)
@@ -110,31 +120,38 @@ final class ImportanceView: UIView {
     private func addViews() {
         addSubview(importanceLabel)
         addSubview(stackView)
+        addSubview(stackView2)
         addSubview(importanceSegmentedControl)
         addSubview(doBeforeSwitch)
         addSubview(border)
         stackView.addArrangedSubview(doBeforeLabel)
         stackView.addArrangedSubview(dateButton)
-        stackView.addArrangedSubview(border2)
-        stackView.addArrangedSubview(calenderView)
+        stackView2.addArrangedSubview(border2)
+        stackView2.addArrangedSubview(calenderView)
     }
     
     @objc private func switchChanget(sender: UISwitch) {
         if sender .isOn {
-            stackView.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 8).isActive = true
-            dateButton.isHidden = false
-            border2.isHidden = false
-            calenderView.isHidden = false
-            layoutIfNeeded()
-            print("Включили")
+            UIView.animate(withDuration: 0.2, animations: {
+                    self.dateButton.isHidden = false
+                })
         } else {
-            stackView.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 16).isActive = true
-            dateButton.isHidden = true
-            border2.isHidden = true
-            calenderView.isHidden = true
-            layoutIfNeeded()
-            print("Выключили")
+            
+            UIView.animate(withDuration: 0.2, animations: {
+                    self.calenderView.isHidden = true
+                    self.border2.isHidden = true
+                    self.dateButton.isHidden = true
+                    self.calenderView.alpha = 1.0
+                })
         }
+    }
+    
+    @objc private func dateButtonPressed() {
+        UIView.animate(withDuration: 0.3, animations: {
+                self.calenderView.isHidden = false
+                self.border2.isHidden = false
+                self.calenderView.alpha = 1.0
+            })
     }
     
     private func setConstraints() {
@@ -151,23 +168,26 @@ final class ImportanceView: UIView {
             border.widthAnchor.constraint(equalToConstant: 100),
             border2.heightAnchor.constraint(equalToConstant: 1),
             border2.widthAnchor.constraint(equalToConstant: 500),
-//            doBeforeLabel.topAnchor.constraint(equalTo: border.bottomAnchor, constant: doBeforeTopConstraint),
-//            doBeforeLabel.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
-//            dateButton.topAnchor.constraint(equalTo: doBeforeLabel.bottomAnchor),
-//            dateButton.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
             doBeforeSwitch.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 13),
             doBeforeSwitch.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
-            stackView.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 17),
             stackView.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+            stackView.centerYAnchor.constraint(equalTo: doBeforeSwitch.centerYAnchor),
+            border2.topAnchor.constraint(equalTo: doBeforeSwitch.bottomAnchor, constant: 12),
+//            stackView2.topAnchor.constraint(equalTo: border2.bottomAnchor),
+            stackView2.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+            stackView2.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            stackView2.bottomAnchor.constraint(equalTo: bottomAnchor)
+            
         ])
     }
 }
 extension ImportanceView: UICalendarSelectionSingleDateDelegate {
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
-        calenderView.isHidden = true
-        border2.isHidden = true
+        UIView.animate(withDuration: 0.3, animations: {
+                self.calenderView.isHidden = true
+                self.border2.isHidden = true
+                self.calenderView.alpha = 1.0
+            })
     }
     
     

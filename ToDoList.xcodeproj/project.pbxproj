@@ -16,6 +16,7 @@
 		029347552A407A6F00FEBCD0 /* ImportanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029347542A407A6F00FEBCD0 /* ImportanceView.swift */; };
 		02A6A1AE2A445ECE00303330 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1AD2A445ECE00303330 /* DataManager.swift */; };
 		02A6A1B02A4460C200303330 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1AF2A4460C200303330 /* TextView.swift */; };
+		02A6A1B22A44647A00303330 /* DeleteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1B12A44647A00303330 /* DeleteButton.swift */; };
 		02C3EA9C2A38606F001C14C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */; };
 		02C3EA9E2A38606F001C14C4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */; };
 		02C3EAA02A38606F001C14C4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9F2A38606F001C14C4 /* ViewController.swift */; };
@@ -47,6 +48,7 @@
 		029347542A407A6F00FEBCD0 /* ImportanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportanceView.swift; sourceTree = "<group>"; };
 		02A6A1AD2A445ECE00303330 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		02A6A1AF2A4460C200303330 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
+		02A6A1B12A44647A00303330 /* DeleteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteButton.swift; sourceTree = "<group>"; };
 		02C3EA982A38606F001C14C4 /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				02C3EA9F2A38606F001C14C4 /* ViewController.swift */,
 				02A6A1AD2A445ECE00303330 /* DataManager.swift */,
 				02C3EAC02A3D9A3E001C14C4 /* DetailViewController.swift */,
+				02A6A1B12A44647A00303330 /* DeleteButton.swift */,
 				02A6A1AF2A4460C200303330 /* TextView.swift */,
 				029347542A407A6F00FEBCD0 /* ImportanceView.swift */,
 				029347472A404CAA00FEBCD0 /* Resources.swift */,
@@ -246,6 +249,7 @@
 				02C3EAA02A38606F001C14C4 /* ViewController.swift in Sources */,
 				02C3EA9C2A38606F001C14C4 /* AppDelegate.swift in Sources */,
 				02C3EAB02A386150001C14C4 /* TodoItem.swift in Sources */,
+				02A6A1B22A44647A00303330 /* DeleteButton.swift in Sources */,
 				02C3EAC12A3D9A3E001C14C4 /* DetailViewController.swift in Sources */,
 				029347552A407A6F00FEBCD0 /* ImportanceView.swift in Sources */,
 				029347482A404CAA00FEBCD0 /* Resources.swift in Sources */,

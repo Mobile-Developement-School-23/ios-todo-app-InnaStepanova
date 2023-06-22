@@ -9,6 +9,21 @@ import UIKit
 
 final class ImportanceView: UIView {
     
+    let dateFormatter = DateFormatter()
+    private var date: Date?
+    var deadline: Date? {
+        date
+    }
+    
+    var importance: Importance {
+        switch importanceSegmentedControl.selectedSegmentIndex {
+        case 0: return .low
+        case 1: return .normal
+        case 2: return .high
+        default: return .normal
+        }
+    }
+    
     private lazy var importanceLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -37,7 +52,6 @@ final class ImportanceView: UIView {
         segmentedControll.setImage(UIImage(named: "sign"), forSegmentAt: 2)
         segmentedControll.bounds.size.width = 150
         segmentedControll.bounds.size.height = 36
-        segmentedControll.selectedSegmentIndex = 2
         return segmentedControll
     }()
     
@@ -47,7 +61,7 @@ final class ImportanceView: UIView {
         button.setTitleColor(Resources.Colors.blueTodo, for: .normal)
         button.titleLabel?.font = Resources.Fonts.sfProText600(with: 13)
         button.isHidden = true
-        button.addTarget(self, action: #selector(dateButtonPressed), for: .touchUpInside)
+         button.addTarget(self, action: #selector(dateButtonPressed), for: .touchUpInside)
         return button
     }()
     
@@ -111,17 +125,19 @@ final class ImportanceView: UIView {
         case .high : importanceSegmentedControl.selectedSegmentIndex = 2
         case .none: break
         }
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM/yyyy"
+        dateFormatter.dateFormat = "d MMMM yyyy"
         
         if let deadlineDate = todoItem?.deadline {
-            print("TRYYYYY")
+            date = deadlineDate
             dateButton.setTitle("\(dateFormatter.string(from: deadlineDate))", for: .normal)
-
         }
         
-        
+            switch todoItem?.importance {
+            case .low: importanceSegmentedControl.selectedSegmentIndex = 0
+            case .normal: importanceSegmentedControl.selectedSegmentIndex = 1
+            case .high: importanceSegmentedControl.selectedSegmentIndex = 2
+            case nil: importanceSegmentedControl.selectedSegmentIndex = 1
+        }
         
         let dateSelection = UICalendarSelectionSingleDate(delegate: self)
         calenderView.selectionBehavior = dateSelection
@@ -163,6 +179,10 @@ final class ImportanceView: UIView {
             UIView.animate(withDuration: 0.2, animations: {
                     self.dateButton.isHidden = false
                 })
+            let today = Date() // текущая дата
+            let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)
+            dateButton.setTitle("\(dateFormatter.string(from: tomorrow ?? Date()))", for: .normal)
+            date = tomorrow
         } else {
             
             UIView.animate(withDuration: 0.2, animations: {
@@ -175,6 +195,15 @@ final class ImportanceView: UIView {
     }
     
     @objc private func dateButtonPressed() {
+        
+        var date = date
+        if date == nil {
+            let today = Date() // текущая дата
+            let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)
+            date = tomorrow
+        }
+        
+        
         UIView.animate(withDuration: 0.3, animations: {
                 self.calenderView.isHidden = false
                 self.border2.isHidden = false
@@ -215,7 +244,9 @@ extension ImportanceView: UICalendarSelectionSingleDateDelegate {
                 self.border2.isHidden = true
                 self.calenderView.alpha = 1.0
             })
+        if let date = selection.selectedDate?.date {
+            dateButton.setTitle("\(dateFormatter.string(from: date))", for: .normal)
+            self.date = date
+        }
     }
-    
-    
 }

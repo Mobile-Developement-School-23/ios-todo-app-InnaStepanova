@@ -14,112 +14,91 @@ enum NavBarPosition {
 
 class DetailViewController: UIViewController {
     
-    var todoItem: TodoItem? = DataManader.shared.getData()
+//    var todoItem: TodoItem? = DataManader.shared.getData()
+    var todoItem: TodoItem? = nil
     
-    private lazy var containerTextView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = Resources.Colors.secondaryBack
-        view.layer.cornerRadius = 16
-        return view
-    }()
     
-    private lazy var textView: UITextView = {
-        let textView = UITextView()
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.isScrollEnabled = false
-        textView.backgroundColor = Resources.Colors.secondaryBack
-        textView.font = Resources.Fonts.sfProText400(with: 17)
-        textView.text = Resources.Strings.placeholder
-        textView.returnKeyType = .done
-        textView.textColor = textView.text == Resources.Strings.placeholder ? Resources.Colors.tertiary : Resources.Colors.primaryLabel
-        textView.text = todoItem?.text
-        
-        return textView
-    }()
+    
+    private lazy var textView = TextView(todoItem: todoItem)
     
     private lazy var importanceView = ImportanceView(todoItem: todoItem)
     
-    private lazy var deleteButton: UIButton = {
-        let button = UIButton()
-        button.configuration = .filled()
-        button.configuration?.title = Resources.Strings.delete
-        button.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
-        button.configuration?.baseForegroundColor = Resources.Colors.tertiary
-        button.titleLabel?.font = Resources.Fonts.sfProText400(with: 30)
-        
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.configuration?.contentInsets.top = 17
-        button.configuration?.contentInsets.bottom = 17
-        button.layer.cornerRadius = 16
-        return button
+    private lazy var deleteButton = DeleteButton(todoItem: todoItem)
+    
+    private lazy var scrollView = UIScrollView()
+    
+    private lazy var contentView = UIView()
+    
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.spacing = 16
+        stackView.axis = .vertical
+        return stackView
     }()
     
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        return scrollView
-    }()
-    
-    private lazy var contentView: UIView = {
-        let contentView = UIView()
-        return contentView
+    private let stackViewDateAndButton: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        return stackView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Resources.Colors.primaryBack
 
-        textView.delegate = self
         configureNavBar()
         addViews()
         setConstraints()
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        if UIDevice.current.orientation.isLandscape {
+            stackView.axis = .horizontal
+            stackView.distribution = .fillEqually
+            stackView.alignment = .top
+            
+        } else {
+            stackView.axis = .vertical
+            stackView.distribution = .fill
+            stackView.alignment = .fill
+        }
+
+        stackView.layoutIfNeeded()
+    }
+
+    
     private func addViews() {
         view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubview(containerTextView)
-        contentView.addSubview(importanceView)
-        contentView.addSubview(deleteButton)
-        containerTextView.addSubview(textView)
+        scrollView.addSubview(stackView)
+        stackView.addArrangedSubview(textView)
+        stackView.addArrangedSubview(stackViewDateAndButton)
+        stackViewDateAndButton.addArrangedSubview(importanceView)
+        stackViewDateAndButton.addArrangedSubview(deleteButton)
     }
     
     private func setConstraints() {
         importanceView.translatesAutoresizingMaskIntoConstraints = false
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        deleteButton.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackViewDateAndButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-    
-            containerTextView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            containerTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            containerTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-
-            textView.topAnchor.constraint(equalTo: containerTextView.topAnchor, constant: 12),
-            textView.leadingAnchor.constraint(equalTo: containerTextView.leadingAnchor, constant: 16),
-            textView.trailingAnchor.constraint(equalTo: containerTextView.trailingAnchor, constant: -16),
-            textView.bottomAnchor.constraint(equalTo: containerTextView.bottomAnchor, constant: -12),
-            textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 120),
-
-            importanceView.topAnchor.constraint(equalTo: containerTextView.bottomAnchor, constant: 16),
-            importanceView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            importanceView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-
-            deleteButton.topAnchor.constraint(equalTo: importanceView.bottomAnchor, constant: 16),
-            deleteButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            deleteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            deleteButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -66)
+            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 16),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
+            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 1, constant: -32)
         ])
     }
 
@@ -161,22 +140,4 @@ class DetailViewController: UIViewController {
         
     }
 
-}
-
-extension DetailViewController : UITextViewDelegate {
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        if textView.text == Resources.Strings.placeholder {
-            textView.text = ""
-            textView.textColor = Resources.Colors.primaryLabel
-        }
-        return true
-    }
-    
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if (text == "\n") {
-            textView.resignFirstResponder()
-            return false
-        }
-        return true
-    }
 }

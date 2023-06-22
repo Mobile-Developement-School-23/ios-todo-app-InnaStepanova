@@ -9,7 +9,7 @@ import UIKit
 
 class TextView: UIView {
     
-    private lazy var textView: UITextView = {
+    private var textView: UITextView = {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.isScrollEnabled = false

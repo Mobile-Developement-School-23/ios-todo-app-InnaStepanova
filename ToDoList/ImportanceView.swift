@@ -27,7 +27,7 @@ final class ImportanceView: UIView {
         return label
     }()
     
-    private lazy var importanceSegmentedControl: UISegmentedControl = {
+     var importanceSegmentedControl: UISegmentedControl = {
         let segmentedControll = UISegmentedControl(items: ["", "", ""])
         segmentedControll.translatesAutoresizingMaskIntoConstraints = false
         segmentedControll.selectedSegmentTintColor = Resources.Colors.elevated
@@ -41,10 +41,9 @@ final class ImportanceView: UIView {
         return segmentedControll
     }()
     
-    private lazy var dateButton: UIButton = {
+     var dateButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("2 июня 2021", for: .normal)
         button.setTitleColor(Resources.Colors.blueTodo, for: .normal)
         button.titleLabel?.font = Resources.Fonts.sfProText600(with: 13)
         button.isHidden = true
@@ -102,6 +101,35 @@ final class ImportanceView: UIView {
         stackView.spacing = 0
         return stackView
     }()
+    
+    init(todoItem: TodoItem?) {
+        super.init(frame: .zero)
+        
+        switch todoItem?.importance {
+        case .low: importanceSegmentedControl.selectedSegmentIndex = 0
+        case .normal: importanceSegmentedControl.selectedSegmentIndex = 1
+        case .high : importanceSegmentedControl.selectedSegmentIndex = 2
+        case .none: break
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        
+        if let deadlineDate = todoItem?.deadline {
+            print("TRYYYYY")
+            dateButton.setTitle("\(dateFormatter.string(from: deadlineDate))", for: .normal)
+
+        }
+        
+        
+        
+        let dateSelection = UICalendarSelectionSingleDate(delegate: self)
+        calenderView.selectionBehavior = dateSelection
+        self.layer.cornerRadius = 16
+        self.backgroundColor = Resources.Colors.secondaryBack
+        addViews()
+        setConstraints()
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -167,13 +195,12 @@ final class ImportanceView: UIView {
             border.heightAnchor.constraint(equalToConstant: 1),
             border.widthAnchor.constraint(equalToConstant: 100),
             border2.heightAnchor.constraint(equalToConstant: 1),
-            border2.widthAnchor.constraint(equalToConstant: 500),
+            border2.widthAnchor.constraint(equalTo: border.widthAnchor),
             doBeforeSwitch.topAnchor.constraint(equalTo: border.bottomAnchor, constant: 13),
             doBeforeSwitch.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
             stackView.leadingAnchor.constraint(equalTo: importanceLabel.leadingAnchor),
             stackView.centerYAnchor.constraint(equalTo: doBeforeSwitch.centerYAnchor),
             border2.topAnchor.constraint(equalTo: doBeforeSwitch.bottomAnchor, constant: 12),
-//            stackView2.topAnchor.constraint(equalTo: border2.bottomAnchor),
             stackView2.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             stackView2.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             stackView2.bottomAnchor.constraint(equalTo: bottomAnchor)

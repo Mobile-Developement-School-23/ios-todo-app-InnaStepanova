@@ -50,6 +50,7 @@ enum Resources {
         static let importance = "Важность"
         static let doBefore = "Сделать до"
         static let delete = "Удалить"
+        static let placeholder = "Что нужно сделать"
     }
 }
 

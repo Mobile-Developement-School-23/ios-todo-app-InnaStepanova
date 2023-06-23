@@ -176,11 +176,15 @@ extension DetailViewController: TextViewDelegate {
     func textNoIsEmpty() {
         navigationItem.rightBarButtonItem?.isEnabled = true
         deleteButton.isEnabled = true
+        deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
+        deleteButton.configuration?.baseForegroundColor = Resources.Colors.redTodo
     }
     
     func textIsEmpty() {
         navigationItem.rightBarButtonItem?.isEnabled = false
-        deleteButton.isEnabled = false
+//        deleteButton.isEnabled = false
+        deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
+        deleteButton.configuration?.baseForegroundColor = Resources.Colors.tertiary
     }
     
 }

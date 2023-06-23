@@ -8,12 +8,9 @@
 import UIKit
 
 class ViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
-//   Это директория где находится папка Documents в которую сохраняются json и csv
+        // Это директория где находится папка Documents в которую сохраняются json и csv
         print(NSHomeDirectory())
-        view.backgroundColor = .red
     }
 }
-

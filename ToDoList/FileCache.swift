@@ -22,18 +22,20 @@ class FileCache {
         todoItems.removeAll(where: { $0.id == id })
     }
     
-    func loadTodoItems(from jsonFile: String) {
+    func loadTodoItems(json: String) -> [TodoItem] {
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let filePath = directory.appendingPathComponent("\(jsonFile)")
+        let filePath = directory.appendingPathComponent("\(json)")
         
         do {
             let data = try Data(contentsOf: filePath)
             let json = try JSONSerialization.jsonObject(with: data)
-            guard let jsonTodo = json as? [Any] else {return}
+            guard let jsonTodo = json as? [Any] else { return [] }
             let todoItems = jsonTodo.compactMap{ TodoItem.parse(json: $0) }
             self.todoItems = todoItems
+            return todoItems
         } catch let error {
             print(error)
+            return []
         }
     }
     

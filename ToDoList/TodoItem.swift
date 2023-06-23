@@ -108,7 +108,7 @@ extension TodoItem {
             changedCSV = "\(dateFormatter.string(from: changedDate))"
         }
         
-        var csvItem: String = "\n\(id),\(text),\(importanceCSV),\(deadlineCSV),\(isDone),\(dateFormatter.string(from: created)),\(changedCSV)"
+        let csvItem: String = "\n\(id),\(text),\(importanceCSV),\(deadlineCSV),\(isDone),\(dateFormatter.string(from: created)),\(changedCSV)"
         
         return csvItem
     }

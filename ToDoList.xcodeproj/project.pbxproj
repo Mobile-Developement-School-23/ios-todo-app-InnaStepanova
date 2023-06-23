@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		029347482A404CAA00FEBCD0 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029347472A404CAA00FEBCD0 /* Resources.swift */; };
+		0293474B2A404E9B00FEBCD0 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0293474A2A404E9B00FEBCD0 /* Colors.xcassets */; };
+		0293474D2A40650200FEBCD0 /* SFProText-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0293474C2A40650200FEBCD0 /* SFProText-Semibold.ttf */; };
+		0293474F2A40654100FEBCD0 /* SF-Pro-Display-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0293474E2A40654100FEBCD0 /* SF-Pro-Display-Semibold.otf */; };
+		029347512A40656600FEBCD0 /* SF-Pro-Display-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 029347502A40656600FEBCD0 /* SF-Pro-Display-Bold.otf */; };
+		029347532A40667B00FEBCD0 /* SFProText-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 029347522A40667B00FEBCD0 /* SFProText-Regular.ttf */; };
+		029347552A407A6F00FEBCD0 /* ImportanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029347542A407A6F00FEBCD0 /* ImportanceView.swift */; };
+		02A6A1AE2A445ECE00303330 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1AD2A445ECE00303330 /* DataManager.swift */; };
+		02A6A1B02A4460C200303330 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1AF2A4460C200303330 /* TextView.swift */; };
+		02A6A1B22A44647A00303330 /* DeleteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1B12A44647A00303330 /* DeleteButton.swift */; };
 		02C3EA9C2A38606F001C14C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */; };
 		02C3EA9E2A38606F001C14C4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */; };
 		02C3EAA02A38606F001C14C4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9F2A38606F001C14C4 /* ViewController.swift */; };
@@ -29,6 +39,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		029347472A404CAA00FEBCD0 /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
+		0293474A2A404E9B00FEBCD0 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		0293474C2A40650200FEBCD0 /* SFProText-Semibold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SFProText-Semibold.ttf"; sourceTree = "<group>"; };
+		0293474E2A40654100FEBCD0 /* SF-Pro-Display-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Display-Semibold.otf"; sourceTree = "<group>"; };
+		029347502A40656600FEBCD0 /* SF-Pro-Display-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Display-Bold.otf"; sourceTree = "<group>"; };
+		029347522A40667B00FEBCD0 /* SFProText-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SFProText-Regular.ttf"; sourceTree = "<group>"; };
+		029347542A407A6F00FEBCD0 /* ImportanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportanceView.swift; sourceTree = "<group>"; };
+		02A6A1AD2A445ECE00303330 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		02A6A1AF2A4460C200303330 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
+		02A6A1B12A44647A00303330 /* DeleteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteButton.swift; sourceTree = "<group>"; };
 		02C3EA982A38606F001C14C4 /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -61,6 +81,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		029347422A40492700FEBCD0 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				0293474C2A40650200FEBCD0 /* SFProText-Semibold.ttf */,
+				029347502A40656600FEBCD0 /* SF-Pro-Display-Bold.otf */,
+				029347522A40667B00FEBCD0 /* SFProText-Regular.ttf */,
+				0293474E2A40654100FEBCD0 /* SF-Pro-Display-Semibold.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		02C3EA8F2A38606E001C14C4 = {
 			isa = PBXGroup;
 			children = (
@@ -82,15 +113,22 @@
 		02C3EA9A2A38606F001C14C4 /* ToDoList */ = {
 			isa = PBXGroup;
 			children = (
+				029347422A40492700FEBCD0 /* Fonts */,
 				02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */,
 				02C3EAAF2A386150001C14C4 /* TodoItem.swift */,
 				02C3EAB12A389468001C14C4 /* FileCache.swift */,
 				02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */,
 				02C3EA9F2A38606F001C14C4 /* ViewController.swift */,
+				02A6A1AD2A445ECE00303330 /* DataManager.swift */,
+				02C3EAC02A3D9A3E001C14C4 /* DetailViewController.swift */,
+				02A6A1B12A44647A00303330 /* DeleteButton.swift */,
+				02A6A1AF2A4460C200303330 /* TextView.swift */,
+				029347542A407A6F00FEBCD0 /* ImportanceView.swift */,
+				029347472A404CAA00FEBCD0 /* Resources.swift */,
 				02C3EAA42A386071001C14C4 /* Assets.xcassets */,
 				02C3EAA62A386071001C14C4 /* LaunchScreen.storyboard */,
 				02C3EAA92A386071001C14C4 /* Info.plist */,
-				02C3EAC02A3D9A3E001C14C4 /* DetailViewController.swift */,
+				0293474A2A404E9B00FEBCD0 /* Colors.xcassets */,
 			);
 			path = ToDoList;
 			sourceTree = "<group>";
@@ -184,8 +222,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0293474B2A404E9B00FEBCD0 /* Colors.xcassets in Resources */,
 				02C3EAA82A386071001C14C4 /* LaunchScreen.storyboard in Resources */,
+				029347532A40667B00FEBCD0 /* SFProText-Regular.ttf in Resources */,
+				0293474F2A40654100FEBCD0 /* SF-Pro-Display-Semibold.otf in Resources */,
 				02C3EAA52A386071001C14C4 /* Assets.xcassets in Resources */,
+				029347512A40656600FEBCD0 /* SF-Pro-Display-Bold.otf in Resources */,
+				0293474D2A40650200FEBCD0 /* SFProText-Semibold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,9 +249,14 @@
 				02C3EAA02A38606F001C14C4 /* ViewController.swift in Sources */,
 				02C3EA9C2A38606F001C14C4 /* AppDelegate.swift in Sources */,
 				02C3EAB02A386150001C14C4 /* TodoItem.swift in Sources */,
+				02A6A1B22A44647A00303330 /* DeleteButton.swift in Sources */,
 				02C3EAC12A3D9A3E001C14C4 /* DetailViewController.swift in Sources */,
+				029347552A407A6F00FEBCD0 /* ImportanceView.swift in Sources */,
+				029347482A404CAA00FEBCD0 /* Resources.swift in Sources */,
 				02C3EAB22A389468001C14C4 /* FileCache.swift in Sources */,
+				02A6A1AE2A445ECE00303330 /* DataManager.swift in Sources */,
 				02C3EA9E2A38606F001C14C4 /* SceneDelegate.swift in Sources */,
+				02A6A1B02A4460C200303330 /* TextView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

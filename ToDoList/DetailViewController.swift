@@ -14,11 +14,8 @@ enum NavBarPosition {
 
 class DetailViewController: UIViewController {
     
-//    var todoItem: TodoItem? = DataManader.shared.getData()
-    var todoItem: TodoItem? = nil
-    
-    
-    
+    var todoItem: TodoItem? = DataManader.shared.getData()
+
     private lazy var textView = TextView(todoItem: todoItem)
     
     private lazy var importanceView = ImportanceView(todoItem: todoItem)
@@ -46,10 +43,14 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Resources.Colors.primaryBack
+        scrollView.keyboardDismissMode = .interactive
+        deleteButton.delegate = self
+        textView.delegate = self
 
         configureNavBar()
         addViews()
         setConstraints()
+        addGesture()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -80,6 +81,7 @@ class DetailViewController: UIViewController {
     }
     
     private func setConstraints() {
+        
         importanceView.translatesAutoresizingMaskIntoConstraints = false
         textView.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
@@ -98,10 +100,21 @@ class DetailViewController: UIViewController {
             stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
-            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 1, constant: -32)
+            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 1, constant: -32),
         ])
     }
 
+    private func addGesture() {
+        let tapScreen = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tapScreen.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapScreen)
+        let swipeScreen = UISwipeGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        swipeScreen.cancelsTouchesInView = false
+        view.addGestureRecognizer(swipeScreen)
+    }
+    @objc private func hideKeyboard() {
+        view.endEditing(true)
+    }
     
     private func configureNavBar() {
         title = Resources.Strings.detailTitle
@@ -111,8 +124,9 @@ class DetailViewController: UIViewController {
         addNavBarButton(at: .left, and: Resources.Strings.cancel)
         addNavBarButton(at: .right, and: Resources.Strings.save)
 //        ?????  Левая кнопка не активна
-        navigationController?.navigationItem.leftBarButtonItem?.isEnabled = false
+//        navigationItem.leftBarButtonItem?.isEnabled = false
     }
+    
     
     func addNavBarButton(at position: NavBarPosition, and title: String) {
         let button = UIButton(type: .system)
@@ -137,7 +151,36 @@ class DetailViewController: UIViewController {
     }
 
     @objc private func rightBarButtonPressed() {
+        let newTodo = TodoItem(id: todoItem?.id ?? UUID().uuidString,
+                               text: textView.text,
+                               importance: importanceView.importance,
+                               deadline: importanceView.deadline,
+                               isDone: false,
+                               created: todoItem?.created ?? Date(),
+                               changed: Date())
         
+        DataManader.shared.save(todo: newTodo)
     }
 
+}
+
+extension DetailViewController: DeleteButtonDelegate {
+    func buttonPressed() {
+        if let todoItem = todoItem {
+            DataManader.shared.delete(todoItem: todoItem)
+        }
+    }
+}
+
+extension DetailViewController: TextViewDelegate {
+    func textNoIsEmpty() {
+        navigationItem.rightBarButtonItem?.isEnabled = true
+        deleteButton.isEnabled = true
+    }
+    
+    func textIsEmpty() {
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        deleteButton.isEnabled = false
+    }
+    
 }

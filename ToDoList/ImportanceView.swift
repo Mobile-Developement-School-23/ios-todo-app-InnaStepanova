@@ -128,6 +128,8 @@ final class ImportanceView: UIView {
         dateFormatter.dateFormat = "d MMMM yyyy"
         
         if let deadlineDate = todoItem?.deadline {
+            doBeforeSwitch.isOn = true
+            dateButton.isHidden = false
             date = deadlineDate
             dateButton.setTitle("\(dateFormatter.string(from: deadlineDate))", for: .normal)
         }
@@ -191,6 +193,7 @@ final class ImportanceView: UIView {
                     self.dateButton.isHidden = true
                     self.calenderView.alpha = 1.0
                 })
+            date = nil
         }
     }
     
@@ -233,7 +236,6 @@ final class ImportanceView: UIView {
             stackView2.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             stackView2.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             stackView2.bottomAnchor.constraint(equalTo: bottomAnchor)
-            
         ])
     }
 }

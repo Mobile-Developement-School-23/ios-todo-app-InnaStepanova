@@ -17,7 +17,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
 //        window?.rootViewController = ViewController()
-        window?.rootViewController = UINavigationController(rootViewController: DetailViewController())
+//        window?.rootViewController = UINavigationController(rootViewController: DetailViewController())
+//        window?.rootViewController = UINavigationController(rootViewController: MyTasksViewController())
+        window?.rootViewController = UINavigationController(rootViewController: TodoItemsTableViewController())
     }
 }
 

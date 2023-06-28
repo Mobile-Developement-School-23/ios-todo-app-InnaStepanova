@@ -46,7 +46,7 @@ final class ImportanceView: UIView {
         let segmentedControll = UISegmentedControl(items: ["", "", ""])
         segmentedControll.translatesAutoresizingMaskIntoConstraints = false
         segmentedControll.selectedSegmentTintColor = Resources.Colors.elevated
-        segmentedControll.backgroundColor = Resources.Colors.overlay
+        segmentedControll.backgroundColor = Resources.Colors.elevated
         segmentedControll.setImage(UIImage(named: "arrov"), forSegmentAt: 0)
         segmentedControll.setTitle("нет", forSegmentAt: 1)
         segmentedControll.setImage(UIImage(named: "sign"), forSegmentAt: 2)

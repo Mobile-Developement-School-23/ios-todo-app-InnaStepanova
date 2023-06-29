@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CocoaLumberjackSwift
 
 enum NavBarPosition {
     case left
@@ -13,6 +14,7 @@ enum NavBarPosition {
 }
 
 class DetailViewController: UIViewController {
+    
     
     var todoItem: TodoItem? = DataManader.shared.getData()
 
@@ -147,10 +149,12 @@ class DetailViewController: UIViewController {
     }
     
     @objc private func leftBarButtonPressed() {
-        
+        DDLogDebug("Дуае bar button is pressed")
     }
 
     @objc private func rightBarButtonPressed() {
+        DDLogDebug("Right bar button is pressed")
+
         let newTodo = TodoItem(id: todoItem?.id ?? UUID().uuidString,
                                text: textView.text,
                                importance: importanceView.importance,
@@ -168,12 +172,15 @@ extension DetailViewController: DeleteButtonDelegate {
     func buttonPressed() {
         if let todoItem = todoItem {
             DataManader.shared.delete(todoItem: todoItem)
+            DDLogDebug("todoItem was deleted")
+
         }
     }
 }
 
 extension DetailViewController: TextViewDelegate {
     func textNoIsEmpty() {
+        DDLogDebug("Text is No Empty")
         navigationItem.rightBarButtonItem?.isEnabled = true
         deleteButton.isEnabled = true
         deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
@@ -181,6 +188,7 @@ extension DetailViewController: TextViewDelegate {
     }
     
     func textIsEmpty() {
+        DDLogDebug("Text is Empty")
         navigationItem.rightBarButtonItem?.isEnabled = false
 //        deleteButton.isEnabled = false
         deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack

@@ -9,6 +9,7 @@ import UIKit
 
 class TodoTableViewCell: UITableViewCell {
     
+    lazy var attributedString: NSAttributedString = .init(string: todoTextLabel.text ?? "")
     
     let checkView: UIImageView = {
         let view = UIImageView()
@@ -128,9 +129,15 @@ class TodoTableViewCell: UITableViewCell {
         ])
     }
     
+    override func prepareForReuse() {
+        todoTextLabel.text = ""
+        calendarStack.isHidden = true
+        let attributedString = NSMutableAttributedString(string: todoTextLabel.text ?? "")
+        attributedString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, attributedString.length))
+        todoTextLabel.attributedText = attributedString
+    }
+    
     func set(todo: TodoItem) {
-        
-        todoTextLabel.text = todo.text
         
         if let deadline = todo.deadline {
             calendarStack.isHidden = false
@@ -164,8 +171,12 @@ class TodoTableViewCell: UITableViewCell {
             todoTextLabel.attributedText = attributedString
             todoTextLabel.textColor = Resources.Colors.tertiary
 
+        } else {
+            let attributedString = NSMutableAttributedString(string: todo.text)
+            attributedString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, attributedString.length))
+            todoTextLabel.attributedText = nil
         }
-        
+        todoTextLabel.text = todo.text
     }
 
 }

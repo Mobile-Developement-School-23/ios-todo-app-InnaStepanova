@@ -18,10 +18,9 @@
 		029347512A40656600FEBCD0 /* SF-Pro-Display-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 029347502A40656600FEBCD0 /* SF-Pro-Display-Bold.otf */; };
 		029347532A40667B00FEBCD0 /* SFProText-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 029347522A40667B00FEBCD0 /* SFProText-Regular.ttf */; };
 		029347552A407A6F00FEBCD0 /* ImportanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029347542A407A6F00FEBCD0 /* ImportanceView.swift */; };
-		029524C92A4C315700D04713 /* TodoItemsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029524C82A4C315700D04713 /* TodoItemsTableViewController.swift */; };
 		02A6A1AE2A445ECE00303330 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1AD2A445ECE00303330 /* DataManager.swift */; };
-		02A6A1B02A4460C200303330 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1AF2A4460C200303330 /* TextView.swift */; };
 		02A6A1B22A44647A00303330 /* DeleteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A6A1B12A44647A00303330 /* DeleteButton.swift */; };
+		02B5FD042A4D876300B9D1E5 /* NewTaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B5FD032A4D876300B9D1E5 /* NewTaskTableViewCell.swift */; };
 		02C3EA9C2A38606F001C14C4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */; };
 		02C3EA9E2A38606F001C14C4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */; };
 		02C3EAA02A38606F001C14C4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C3EA9F2A38606F001C14C4 /* ViewController.swift */; };
@@ -55,10 +54,9 @@
 		029347502A40656600FEBCD0 /* SF-Pro-Display-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Display-Bold.otf"; sourceTree = "<group>"; };
 		029347522A40667B00FEBCD0 /* SFProText-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SFProText-Regular.ttf"; sourceTree = "<group>"; };
 		029347542A407A6F00FEBCD0 /* ImportanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportanceView.swift; sourceTree = "<group>"; };
-		029524C82A4C315700D04713 /* TodoItemsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItemsTableViewController.swift; sourceTree = "<group>"; };
 		02A6A1AD2A445ECE00303330 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
-		02A6A1AF2A4460C200303330 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		02A6A1B12A44647A00303330 /* DeleteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteButton.swift; sourceTree = "<group>"; };
+		02B5FD032A4D876300B9D1E5 /* NewTaskTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTaskTableViewCell.swift; sourceTree = "<group>"; };
 		02C3EA982A38606F001C14C4 /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -95,7 +93,6 @@
 			isa = PBXGroup;
 			children = (
 				028A66C32A49B6D9000B4CEF /* MyTasksViewController.swift */,
-				029524C82A4C315700D04713 /* TodoItemsTableViewController.swift */,
 				02C3EAC02A3D9A3E001C14C4 /* DetailViewController.swift */,
 				02C3EA9F2A38606F001C14C4 /* ViewController.swift */,
 			);
@@ -107,8 +104,8 @@
 			children = (
 				028A66C72A49CF65000B4CEF /* TodoTableViewCell.swift */,
 				028A66CB2A4ADBF4000B4CEF /* TodoItemsTableView.swift */,
+				02B5FD032A4D876300B9D1E5 /* NewTaskTableViewCell.swift */,
 				029347542A407A6F00FEBCD0 /* ImportanceView.swift */,
-				02A6A1AF2A4460C200303330 /* TextView.swift */,
 				028A66CF2A4B7CAD000B4CEF /* HeaderView.swift */,
 				02A6A1B12A44647A00303330 /* DeleteButton.swift */,
 			);
@@ -280,6 +277,7 @@
 				02C3EAA02A38606F001C14C4 /* ViewController.swift in Sources */,
 				02C3EA9C2A38606F001C14C4 /* AppDelegate.swift in Sources */,
 				02C3EAB02A386150001C14C4 /* TodoItem.swift in Sources */,
+				02B5FD042A4D876300B9D1E5 /* NewTaskTableViewCell.swift in Sources */,
 				02A6A1B22A44647A00303330 /* DeleteButton.swift in Sources */,
 				02C3EAC12A3D9A3E001C14C4 /* DetailViewController.swift in Sources */,
 				029347552A407A6F00FEBCD0 /* ImportanceView.swift in Sources */,
@@ -289,9 +287,7 @@
 				02A6A1AE2A445ECE00303330 /* DataManager.swift in Sources */,
 				028A66D02A4B7CAD000B4CEF /* HeaderView.swift in Sources */,
 				028A66C42A49B6DA000B4CEF /* MyTasksViewController.swift in Sources */,
-				029524C92A4C315700D04713 /* TodoItemsTableViewController.swift in Sources */,
 				02C3EA9E2A38606F001C14C4 /* SceneDelegate.swift in Sources */,
-				02A6A1B02A4460C200303330 /* TextView.swift in Sources */,
 				028A66CC2A4ADBF4000B4CEF /* TodoItemsTableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

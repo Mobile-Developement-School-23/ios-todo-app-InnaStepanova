@@ -7,22 +7,29 @@
 
 import UIKit
 
+protocol HeaderViewDelegate {
+    func showButtonTapped()
+}
+
 class HeaderView: UIView {
+    
+    var delegate: HeaderViewDelegate!
     
     private var doneLabel: UILabel = {
         let label = UILabel()
         label.textColor = Resources.Colors.tertiary
         label.font = Resources.Fonts.sfProText400(with: 15)
-        label.text = "Выполнено - 5"
+        label.text = "Выполнено — 5"
         return label
     }()
     
     private var showButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Показать", for: .normal)
+//        button.setTitle("Показать", for: .normal)
         button.setTitleColor(Resources.Colors.blueTodo, for: .normal)
         button.setTitleColor(Resources.Colors.tertiary, for: .disabled)
         button.titleLabel?.font = Resources.Fonts.sfProText600(with: 15)
+        button.addTarget(self, action: #selector(showButtonPressed), for: .touchUpInside)
         return button
     }()
     
@@ -44,5 +51,17 @@ class HeaderView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    @objc private func showButtonPressed() {
+        delegate.showButtonTapped()
+    }
+    
+    func setHeader(stateIsDone: Bool, isDoneCount: Int) {
+        if stateIsDone {
+            showButton.setTitle("Скрыть", for: .normal)
+        } else {
+            showButton.setTitle("Скрыть", for: .normal)
+        }
+        doneLabel.text = "Выполнено — \(isDoneCount)"
     }
 }

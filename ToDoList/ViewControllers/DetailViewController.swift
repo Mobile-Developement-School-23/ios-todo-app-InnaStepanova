@@ -7,6 +7,11 @@
 
 import UIKit
 
+protocol DetailViewControllerDelegate {
+    func save(todoItem: TodoItem)
+    func delete(todoItem: TodoItem)
+}
+
 enum NavBarPosition {
     case left
     case right
@@ -14,9 +19,11 @@ enum NavBarPosition {
 
 class DetailViewController: UIViewController {
     
-    var todoItem: TodoItem? = DataManader.shared.getData()
+    private var todoItem: TodoItem?
+    
+    var delegate2: DetailViewControllerDelegate!
 
-    private lazy var textView = TextView(todoItem: todoItem)
+    private lazy var textView = UITextView()
     
     private lazy var importanceView = ImportanceView(todoItem: todoItem)
     
@@ -30,64 +37,69 @@ class DetailViewController: UIViewController {
         let stackView = UIStackView()
         stackView.spacing = 16
         stackView.axis = .vertical
+//        stackView.distribution = .fill
+        stackView.alignment = .fill
         return stackView
     }()
     
-    private let stackViewDateAndButton: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        return stackView
-    }()
+    init(todoItem: TodoItem?) {
+        super.init(nibName: nil, bundle: nil)
+        self.todoItem = todoItem
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Resources.Colors.primaryBack
         scrollView.keyboardDismissMode = .interactive
         deleteButton.delegate = self
-        textView.delegate = self
-
+        setupTextView()
         configureNavBar()
         addViews()
         setConstraints()
         addGesture()
+        setupKeyboardObserver()
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        if UIDevice.current.orientation.isLandscape {
-            stackView.axis = .horizontal
-            stackView.distribution = .fillEqually
-            stackView.alignment = .top
-            
+    func setupTextView(){
+        
+        textView.text = todoItem?.text
+        textView.textColor = UIColor.lightGray
+        textView.layer.cornerRadius = 16
+        textView.backgroundColor = Resources.Colors.secondaryBack
+        textView.font = Resources.Fonts.sfProText400(with: 17)
+        textView.textContainerInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        textView.isScrollEnabled = false
+        textView.keyboardDismissMode = .interactive
+        if todoItem != nil {
+            textView.text = todoItem?.text
+            textView.textColor = Resources.Colors.primaryLabel
         } else {
-            stackView.axis = .vertical
-            stackView.distribution = .fill
-            stackView.alignment = .fill
+            textView.text = Resources.Strings.placeholder
+            textView.textColor = Resources.Colors.tertiary
         }
-
-        stackView.layoutIfNeeded()
     }
 
     
     private func addViews() {
         view.addSubview(scrollView)
-        scrollView.addSubview(stackView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(stackView)
         stackView.addArrangedSubview(textView)
-        stackView.addArrangedSubview(stackViewDateAndButton)
-        stackViewDateAndButton.addArrangedSubview(importanceView)
-        stackViewDateAndButton.addArrangedSubview(deleteButton)
+        stackView.addArrangedSubview(importanceView)
+        stackView.addArrangedSubview(deleteButton)
     }
     
     private func setConstraints() {
-        
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         importanceView.translatesAutoresizingMaskIntoConstraints = false
         textView.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackViewDateAndButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             
@@ -96,11 +108,20 @@ class DetailViewController: UIViewController {
             scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
-            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 1, constant: -32),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 16),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32),
+            
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 120),
+            
+            
         ])
     }
 
@@ -108,9 +129,6 @@ class DetailViewController: UIViewController {
         let tapScreen = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         tapScreen.cancelsTouchesInView = false
         view.addGestureRecognizer(tapScreen)
-        let swipeScreen = UISwipeGestureRecognizer(target: self, action: #selector(hideKeyboard))
-        swipeScreen.cancelsTouchesInView = false
-        view.addGestureRecognizer(swipeScreen)
     }
     @objc private func hideKeyboard() {
         view.endEditing(true)
@@ -123,10 +141,30 @@ class DetailViewController: UIViewController {
             .font: Resources.Fonts.sfProText600(with: 17)]
         addNavBarButton(at: .left, and: Resources.Strings.cancel)
         addNavBarButton(at: .right, and: Resources.Strings.save)
-//        ?????  Левая кнопка не активна
-//        navigationItem.leftBarButtonItem?.isEnabled = false
     }
     
+    func setupKeyboardObserver() {
+
+        NotificationCenter.default.addObserver(
+            self,selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification, object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification, object: nil
+        )
+    }
+    
+    @objc func keyboardWillShow(sender: NSNotification) {
+        guard let userInfo = sender.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let keyboardHeight = keyboardFrame.cgRectValue.height
+        scrollView.contentInset.bottom = keyboardHeight
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        scrollView.contentInset.bottom = 0
+    }
     
     func addNavBarButton(at position: NavBarPosition, and title: String) {
         let button = UIButton(type: .system)
@@ -147,7 +185,7 @@ class DetailViewController: UIViewController {
     }
     
     @objc private func leftBarButtonPressed() {
-        
+        dismiss(animated: true)
     }
 
     @objc private func rightBarButtonPressed() {
@@ -155,36 +193,45 @@ class DetailViewController: UIViewController {
                                text: textView.text,
                                importance: importanceView.importance,
                                deadline: importanceView.deadline,
-                               isDone: false,
+                               isDone: todoItem?.isDone ?? false,
                                created: todoItem?.created ?? Date(),
                                changed: Date())
         
-        DataManader.shared.save(todo: newTodo)
+        delegate2.save(todoItem: newTodo)
+        dismiss(animated: true)
     }
-
 }
 
 extension DetailViewController: DeleteButtonDelegate {
     func buttonPressed() {
-        if let todoItem = todoItem {
-            DataManader.shared.delete(todoItem: todoItem)
-        }
+        if let deletetodoItem = todoItem {
+            delegate2.delete(todoItem: deletetodoItem)
+        } 
+        dismiss(animated: true)
     }
 }
 
-extension DetailViewController: TextViewDelegate {
-    func textNoIsEmpty() {
-        navigationItem.rightBarButtonItem?.isEnabled = true
-        deleteButton.isEnabled = true
-        deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
-        deleteButton.configuration?.baseForegroundColor = Resources.Colors.redTodo
+extension DetailViewController: UITextViewDelegate {
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        if textView.text == Resources.Strings.placeholder {
+            textView.text = ""
+            textView.textColor = Resources.Colors.primaryLabel
+        }
+        return true
     }
     
-    func textIsEmpty() {
-        navigationItem.rightBarButtonItem?.isEnabled = false
-//        deleteButton.isEnabled = false
-        deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
-        deleteButton.configuration?.baseForegroundColor = Resources.Colors.tertiary
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text == "" {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+    //        deleteButton.isEnabled = false
+            deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
+            deleteButton.configuration?.baseForegroundColor = Resources.Colors.tertiary
+        }
+        if textView.text.count == 1 {
+            navigationItem.rightBarButtonItem?.isEnabled = true
+            deleteButton.isEnabled = true
+            deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
+            deleteButton.configuration?.baseForegroundColor = Resources.Colors.redTodo
+        }
     }
-    
 }

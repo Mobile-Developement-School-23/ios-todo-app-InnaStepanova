@@ -17,9 +17,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.makeKeyAndVisible()
 //        window?.rootViewController = ViewController()
-//        window?.rootViewController = UINavigationController(rootViewController: DetailViewController())
-//        window?.rootViewController = UINavigationController(rootViewController: MyTasksViewController())
-        window?.rootViewController = UINavigationController(rootViewController: TodoItemsTableViewController())
+//        window?.rootViewController = UINavigationController(rootViewController: DetailViewController(todoItem: TodoItem(text: " jhgjdshgj ролвполраолв овфоывроарфдлвы форвадлрфлыдлтсв лорыфолрлдврфыдт рифдлорылдрвлдф рофолырлдоврф вфрлоы фврдлырив вфиоывидолф вфдоывлфдытв вфыдлвтиоы вфиолдыив вфыоивдиыф вфоыив вфиодв вдофы дв чытлфдв д  ыфидв фдоыв офыдв дфлвдов дв в двkgkab", importance: .high)))
+        window?.rootViewController = UINavigationController(rootViewController: MyTasksViewController())
+//        window?.rootViewController = UINavigationController(rootViewController: TodoItemsTableViewController())
     }
 }
 

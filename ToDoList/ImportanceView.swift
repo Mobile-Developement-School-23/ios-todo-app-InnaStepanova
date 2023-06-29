@@ -8,13 +8,13 @@
 import UIKit
 
 final class ImportanceView: UIView {
-    
+
     let dateFormatter = DateFormatter()
     private var date: Date?
     var deadline: Date? {
         date
     }
-    
+
     var importance: Importance {
         switch importanceSegmentedControl.selectedSegmentIndex {
         case 0: return .low
@@ -23,7 +23,7 @@ final class ImportanceView: UIView {
         default: return .normal
         }
     }
-    
+
     private lazy var importanceLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -32,7 +32,7 @@ final class ImportanceView: UIView {
         label.font = Resources.Fonts.sfProText400(with: 17)
         return label
     }()
-    
+
     private lazy var doBeforeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +41,7 @@ final class ImportanceView: UIView {
         label.font = Resources.Fonts.sfProText400(with: 17)
         return label
     }()
-    
+
      var importanceSegmentedControl: UISegmentedControl = {
         let segmentedControll = UISegmentedControl(items: ["", "", ""])
         segmentedControll.translatesAutoresizingMaskIntoConstraints = false
@@ -54,8 +54,8 @@ final class ImportanceView: UIView {
         segmentedControll.bounds.size.height = 36
         return segmentedControll
     }()
-    
-     var dateButton: UIButton = {
+
+     lazy var dateButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(Resources.Colors.blueTodo, for: .normal)
@@ -64,14 +64,14 @@ final class ImportanceView: UIView {
          button.addTarget(self, action: #selector(dateButtonPressed), for: .touchUpInside)
         return button
     }()
-    
+
     private lazy var doBeforeSwitch: UISwitch = {
-        let sw = UISwitch()
-        sw.translatesAutoresizingMaskIntoConstraints = false
-        sw.addTarget(self, action: #selector(switchChanget), for: .touchUpInside)
-        return sw
+        let swith = UISwitch()
+        swith.translatesAutoresizingMaskIntoConstraints = false
+        swith.addTarget(self, action: #selector(switchChanget), for: .touchUpInside)
+        return swith
     }()
-    
+
     private lazy var border: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -79,7 +79,7 @@ final class ImportanceView: UIView {
         view.bounds.size.height = 1
         return view
     }()
-    
+
     private lazy var border2: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -88,7 +88,7 @@ final class ImportanceView: UIView {
         view.isHidden = true
         return view
     }()
-    
+
     private lazy var calenderView: UICalendarView = {
         let calendarView = UICalendarView()
         calendarView.translatesAutoresizingMaskIntoConstraints = false
@@ -97,7 +97,7 @@ final class ImportanceView: UIView {
         calendarView.isHidden = true
         return calendarView
     }()
-    
+
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -106,7 +106,7 @@ final class ImportanceView: UIView {
         stackView.spacing = 0
         return stackView
     }()
-    
+
     private lazy var stackView2: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -115,32 +115,32 @@ final class ImportanceView: UIView {
         stackView.spacing = 0
         return stackView
     }()
-    
+
     init(todoItem: TodoItem?) {
         super.init(frame: .zero)
-        
+
         switch todoItem?.importance {
         case .low: importanceSegmentedControl.selectedSegmentIndex = 0
         case .normal: importanceSegmentedControl.selectedSegmentIndex = 1
-        case .high : importanceSegmentedControl.selectedSegmentIndex = 2
+        case .high: importanceSegmentedControl.selectedSegmentIndex = 2
         case .none: break
         }
         dateFormatter.dateFormat = "d MMMM yyyy"
-        
+
         if let deadlineDate = todoItem?.deadline {
             doBeforeSwitch.isOn = true
             dateButton.isHidden = false
             date = deadlineDate
             dateButton.setTitle("\(dateFormatter.string(from: deadlineDate))", for: .normal)
         }
-        
+
             switch todoItem?.importance {
             case .low: importanceSegmentedControl.selectedSegmentIndex = 0
             case .normal: importanceSegmentedControl.selectedSegmentIndex = 1
             case .high: importanceSegmentedControl.selectedSegmentIndex = 2
             case nil: importanceSegmentedControl.selectedSegmentIndex = 1
         }
-        
+
         let dateSelection = UICalendarSelectionSingleDate(delegate: self)
         calenderView.selectionBehavior = dateSelection
         self.layer.cornerRadius = 16
@@ -148,7 +148,7 @@ final class ImportanceView: UIView {
         addViews()
         setConstraints()
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         let dateSelection = UICalendarSelectionSingleDate(delegate: self)
@@ -158,11 +158,11 @@ final class ImportanceView: UIView {
         addViews()
         setConstraints()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func addViews() {
         addSubview(importanceLabel)
         addSubview(stackView)
@@ -175,7 +175,7 @@ final class ImportanceView: UIView {
         stackView2.addArrangedSubview(border2)
         stackView2.addArrangedSubview(calenderView)
     }
-    
+
     @objc private func switchChanget(sender: UISwitch) {
         if sender .isOn {
             UIView.animate(withDuration: 0.2, animations: {
@@ -186,7 +186,7 @@ final class ImportanceView: UIView {
             dateButton.setTitle("\(dateFormatter.string(from: tomorrow ?? Date()))", for: .normal)
             date = tomorrow
         } else {
-            
+
             UIView.animate(withDuration: 0.2, animations: {
                     self.calenderView.isHidden = true
                     self.border2.isHidden = true
@@ -196,26 +196,25 @@ final class ImportanceView: UIView {
             date = nil
         }
     }
-    
+
     @objc private func dateButtonPressed() {
-        
+
         var date = date
         if date == nil {
             let today = Date() // текущая дата
             let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)
             date = tomorrow
         }
-        
-        
+
         UIView.animate(withDuration: 0.3, animations: {
                 self.calenderView.isHidden = false
                 self.border2.isHidden = false
                 self.calenderView.alpha = 1.0
             })
     }
-    
+
     private func setConstraints() {
-        
+
         NSLayoutConstraint.activate([
             importanceLabel.topAnchor.constraint(equalTo: topAnchor, constant: 17),
             importanceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),

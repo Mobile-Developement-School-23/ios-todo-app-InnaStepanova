@@ -21,7 +21,6 @@ struct TodoItem {
     let isDone: Bool
     let created: Date
     let changed: Date?
-    
     init(id: String = UUID().uuidString,
          text: String,
          importance: Importance,
@@ -66,16 +65,16 @@ extension TodoItem {
               let createdTimestamp = dict["created"] as? TimeInterval else {
             return nil
         }
-        
+
         let importanceString = dict["importance"] as? String
         let importance = Importance(rawValue: importanceString ?? "normal") ?? .normal
-        
+
         let deadlineTimestamp = dict["deadline"] as? TimeInterval
         let deadline = deadlineTimestamp.map({Date(timeIntervalSince1970: $0)})
-        
+
         let changedTimestamp = dict["changed"] as? TimeInterval
         let changed = changedTimestamp.map({Date(timeIntervalSince1970: $0)})
-        
+
         return TodoItem(id: id,
                         text: text,
                         importance: importance,
@@ -91,34 +90,33 @@ extension TodoItem {
         var importanceCSV = ""
         var deadlineCSV = ""
         var changedCSV = ""
-        
+
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM/yyyy HH:mm:ss"
 
-        
         if importance != .normal {
             importanceCSV  = importance.rawValue
         }
-        
+
         if let deadlineDate = deadline {
             deadlineCSV = "\(dateFormatter.string(from: deadlineDate))"
         }
-        
+
         if let changedDate = changed {
             changedCSV = "\(dateFormatter.string(from: changedDate))"
         }
-        
+
         let csvItem: String = "\n\(id),\(text),\(importanceCSV),\(deadlineCSV),\(isDone),\(dateFormatter.string(from: created)),\(changedCSV)"
-        
+
         return csvItem
     }
-    
+
     static func parse(csv: String) -> TodoItem? {
         let values = csv.components(separatedBy: ",")
             guard values.count == 7 else {
                 return nil
             }
-        
+
             let id = values[0]
             let text = values[1]
             let importance = Importance(rawValue: values[2]) ?? .normal
@@ -126,14 +124,14 @@ extension TodoItem {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "dd/MM/yyyy HH:mm:ss"
 
-            let deadline = values[3] != "" ? dateFormatter.date(from:values[3]) : nil
+            let deadline = values[3] != "" ? dateFormatter.date(from: values[3]) : nil
         if values[4] != "true" && values[4] != "false" {
             return nil
         }
         let isDone = values[4] == "true" ? true : false
 
-        guard let created = dateFormatter.date(from:values[5]) else { return nil }
-            let changed = values.count == 7 ? dateFormatter.date(from:values[6]) : nil
+        guard let created = dateFormatter.date(from: values[5]) else { return nil }
+            let changed = values.count == 7 ? dateFormatter.date(from: values[6]) : nil
             return TodoItem(id: id, text: text, importance: importance, deadline: deadline, isDone: isDone, created: created, changed: changed)
         }
 }

@@ -7,14 +7,14 @@
 
 import UIKit
 
-protocol DeleteButtonDelegate {
+protocol DeleteButtonDelegate: AnyObject {
     func buttonPressed()
 }
 
 class DeleteButton: UIButton {
-    
+
     var delegate: DeleteButtonDelegate!
-    
+
     init(todoItem: TodoItem?) {
         super.init(frame: .zero)
         configure()
@@ -25,11 +25,11 @@ class DeleteButton: UIButton {
             configuration?.baseForegroundColor = Resources.Colors.redTodo
         }
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func configure() {
         configuration = .filled()
         configuration?.title = Resources.Strings.delete
@@ -40,7 +40,7 @@ class DeleteButton: UIButton {
         layer.cornerRadius = 16
         addTarget(self, action: #selector(deleteButtonPressed), for: .touchUpInside)
     }
-    
+
     @objc private func deleteButtonPressed() {
         delegate.buttonPressed()
     }

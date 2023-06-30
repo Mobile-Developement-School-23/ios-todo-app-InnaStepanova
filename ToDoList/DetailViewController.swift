@@ -15,7 +15,7 @@ enum NavBarPosition {
 
 class DetailViewController: UIViewController {
 
-    var todoItem: TodoItem? = DataManader.shared.getData()
+    var todoItem: TodoItem? = DataManader.shared.getFirstTodoItem()
 
     private lazy var textView = TextView(todoItem: todoItem)
 

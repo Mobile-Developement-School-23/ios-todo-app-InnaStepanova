@@ -3,12 +3,8 @@
 //  ToDoList
 //
 //  Created by Лаванда on 13.06.2023.
-//
-
 import Foundation
-
 class FileCache {
-
     private(set) var todoItems: [TodoItem] = []
     func add(todoItem: TodoItem) {
         if let index = todoItems.firstIndex(where: { $0.id == todoItem.id }) {

@@ -53,6 +53,7 @@
 		02A6A1AD2A445ECE00303330 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		02A6A1AF2A4460C200303330 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		02A6A1B12A44647A00303330 /* DeleteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteButton.swift; sourceTree = "<group>"; };
+		02AA03112A4EED550041EBB4 /* CasheFilePackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CasheFilePackage; path = ../../CasheFilePackage; sourceTree = "<group>"; };
 		02C3EA982A38606F001C14C4 /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02C3EA9B2A38606F001C14C4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02C3EA9D2A38606F001C14C4 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -106,9 +107,18 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		02AA03102A4EED550041EBB4 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				02AA03112A4EED550041EBB4 /* CasheFilePackage */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		02C3EA8F2A38606E001C14C4 = {
 			isa = PBXGroup;
 			children = (
+				02AA03102A4EED550041EBB4 /* Packages */,
 				02C3EA9A2A38606F001C14C4 /* ToDoList */,
 				02C3EAB82A3C7955001C14C4 /* ToDoListTests */,
 				02C3EA992A38606F001C14C4 /* Products */,

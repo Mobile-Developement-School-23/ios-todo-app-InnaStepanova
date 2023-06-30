@@ -130,21 +130,22 @@ class TodoTableViewCell: UITableViewCell {
     }
     
     override func prepareForReuse() {
+        calendarStack.isHidden = true
         todoTextLabel.attributedText = NSAttributedString(string: todoTextLabel.text ?? "", attributes: [NSAttributedString.Key.strikethroughStyle: 0])
         todoTextLabel.textColor = Resources.Colors.primaryLabel
         todoTextLabel.attributedText = attributedString2
     }
     
     func set(todo: TodoItem) {
-        todoTextLabel.text = todo.text
         
         if let deadline = todo.deadline {
+            todoVerticalStack.leadingAnchor.constraint(equalTo: checkView.trailingAnchor, constant: 12).isActive = false
+            importanceView.image = nil
             calendarStack.isHidden = false
             let formatter = DateFormatter()
             formatter.dateFormat = "dd MMMM"
             let dateString = formatter.string(from: deadline)
             deadlineLabel.text = dateString
-            calendarStack.isHidden = false
         }
         
         switch todo.importance {
@@ -169,6 +170,10 @@ class TodoTableViewCell: UITableViewCell {
             todoTextLabel.attributedText = attributedString2
             todoTextLabel.textColor = Resources.Colors.tertiary
 
+        } else {
+            todoTextLabel.attributedText = NSAttributedString(string: todoTextLabel.text ?? "", attributes: [NSAttributedString.Key.strikethroughStyle: 0])
+            todoTextLabel.textColor = Resources.Colors.primaryLabel
+            todoTextLabel.attributedText = attributedString2
         }
         todoTextLabel.text = todo.text
     }

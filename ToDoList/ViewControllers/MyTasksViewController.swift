@@ -18,6 +18,7 @@ class MyTasksViewController: UIViewController {
         button.bounds.size.width = 44
         button.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
 
+
         return button
     }()
 
@@ -64,6 +65,7 @@ class MyTasksViewController: UIViewController {
 }
 
 extension MyTasksViewController: TodoItemsTableViewDelegate {
+    
     func tappedToCell(with todoItem: TodoItem?) {
         let detailVC = DetailViewController(todoItem: todoItem)
         detailVC.delegate2 = todoItemsTableView

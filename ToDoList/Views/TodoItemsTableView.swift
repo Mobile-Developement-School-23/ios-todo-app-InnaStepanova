@@ -52,7 +52,6 @@ class TodoItemsTableView: UITableView {
        
     }
     
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -104,15 +103,13 @@ class TodoItemsTableView: UITableView {
         func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
             let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { (actions) -> UIMenu? in
                 let action1 = UIAction(title: "Готово", image: UIImage(named: "on")) { (_) in
-                    print("Готово")
+                    self.doneTodoItem(at: indexPath)
                 }
                 let deleteImage = UIImage(systemName: "trash")?.withTintColor(UIColor.red, renderingMode: .alwaysTemplate)
                 let action2 = UIAction(title: "Удалить", image: deleteImage) { (_) in
-                    print("Удалить")
+                    self.deleteTodoItem(at: indexPath)
                 }
-                
-                // Верните меню с созданными действиями
-                return UIMenu(title: "", children: [action1, action2])
+                return UIMenu(title: "Выберете действие", children: [action1, action2])
             }
             
             let filtredTodoItems = stateIsDone ? todoItems : todoItems.filter { $0.isDone == false }
@@ -121,8 +118,6 @@ class TodoItemsTableView: UITableView {
             }
             return nil
         }
-
-
         
         func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
                 return headerView
@@ -150,21 +145,32 @@ class TodoItemsTableView: UITableView {
             return count
         }
 
+        func doneTodoItem(at indexPath: IndexPath) {
+            let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
+            var item = filtredTodoItems[indexPath.row]
+            item.isDone = true
+            if let index = self.todoItems.firstIndex(where: { $0.id == item.id }) {
+                self.todoItems[index] = item
+            }
+            if self.stateIsDone {
+                self.reloadRows(at: [indexPath], with: .automatic)
+            } else {
+                self.deleteRows(at: [indexPath], with: .automatic)
+            }
+        }
         
+        func deleteTodoItem(at indexPath: IndexPath) {
+                let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
+                let item = filtredTodoItems[indexPath.row]
+                if let index = self.todoItems.firstIndex(where: { $0.id == item.id }) {
+                    self.todoItems.remove(at: index)
+                }
+                self.deleteRows(at: [indexPath], with: .automatic)
+        }
         
         func doneAction(at indexPath: IndexPath) -> UIContextualAction {
             let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
-                let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
-                var item = filtredTodoItems[indexPath.row]
-                item.isDone = true
-                if let index = self.todoItems.firstIndex(where: { $0.id == item.id }) {
-                    self.todoItems[index] = item
-                }
-                if self.stateIsDone {
-                    self.reloadRows(at: [indexPath], with: .automatic)
-                } else {
-                    self.deleteRows(at: [indexPath], with: .automatic)
-                }
+                self.doneTodoItem(at: indexPath)
                 completion(true)
                 
             }
@@ -175,13 +181,8 @@ class TodoItemsTableView: UITableView {
         }
         
         func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
-            let action = UIContextualAction(style: .destructive, title: nil) { (action, view, completion) in
-                let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
-                let item = filtredTodoItems[indexPath.row]
-                if let index = self.todoItems.firstIndex(where: { $0.id == item.id }) {
-                    self.todoItems.remove(at: index)
-                }
-                self.deleteRows(at: [indexPath], with: .automatic)
+            let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+            self.deleteTodoItem(at: indexPath)
                 completion(true)
                 
             }
@@ -202,6 +203,9 @@ class TodoItemsTableView: UITableView {
             action.image = image
             return action
         }
+        
+        
+        
         
     }
 
@@ -234,9 +238,15 @@ class TodoItemsTableView: UITableView {
         }
     }
 
+
+
+
 extension TodoItemsTableView: HeaderViewDelegate {
     func showButtonTapped() {
         stateIsDone.toggle()
         headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
     }
 }
+
+
+

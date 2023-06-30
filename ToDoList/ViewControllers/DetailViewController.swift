@@ -22,7 +22,9 @@ class DetailViewController: UIViewController {
     private var todoItem: TodoItem?
     
     var delegate2: DetailViewControllerDelegate!
-
+    
+    var heightConstraint: NSLayoutConstraint?
+    
     private lazy var textView = UITextView()
     
     private lazy var importanceView = ImportanceView(todoItem: todoItem)
@@ -37,7 +39,7 @@ class DetailViewController: UIViewController {
         let stackView = UIStackView()
         stackView.spacing = 16
         stackView.axis = .vertical
-//        stackView.distribution = .fill
+        //        stackView.distribution = .fill
         stackView.alignment = .fill
         return stackView
     }()
@@ -62,6 +64,20 @@ class DetailViewController: UIViewController {
         setConstraints()
         addGesture()
         setupKeyboardObserver()
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let interfaceOrientation = windowScene.interfaceOrientation
+                if interfaceOrientation.isLandscape {
+                    importanceView.isHidden = true
+                    deleteButton.isHidden = true
+                } else {
+                    importanceView.isHidden = false
+                    deleteButton.isHidden = false
+                }
+            }
     }
     
     func setupTextView(){
@@ -94,6 +110,7 @@ class DetailViewController: UIViewController {
     }
     
     private func setConstraints() {
+        heightConstraint = textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 120)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         importanceView.translatesAutoresizingMaskIntoConstraints = false
@@ -223,7 +240,6 @@ extension DetailViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         if textView.text == "" {
             navigationItem.rightBarButtonItem?.isEnabled = false
-    //        deleteButton.isEnabled = false
             deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
             deleteButton.configuration?.baseForegroundColor = Resources.Colors.tertiary
         }

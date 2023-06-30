@@ -33,6 +33,24 @@ class HeaderView: UIView {
         return button
     }()
     
+//    init(stateIsDone: Bool, qtyIsDone: Int) {
+//        super.init(frame: .zero)
+//
+//        addSubview(doneLabel)
+//        addSubview(showButton)
+//        backgroundColor = Resources.Colors.primaryBack
+//        doneLabel.translatesAutoresizingMaskIntoConstraints = false
+//        showButton.translatesAutoresizingMaskIntoConstraints = false
+//        NSLayoutConstraint.activate([
+//            doneLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+//            showButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+//            doneLabel.centerYAnchor.constraint(equalTo: showButton.centerYAnchor),
+//            doneLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
+//            doneLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8)
+//        ])
+//        setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
+//    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(doneLabel)
@@ -60,7 +78,7 @@ class HeaderView: UIView {
         if stateIsDone {
             showButton.setTitle("Скрыть", for: .normal)
         } else {
-            showButton.setTitle("Скрыть", for: .normal)
+            showButton.setTitle("Показать", for: .normal)
         }
         doneLabel.text = "Выполнено — \(isDoneCount)"
     }

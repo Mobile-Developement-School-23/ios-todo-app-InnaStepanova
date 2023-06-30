@@ -8,17 +8,6 @@
 import UIKit
 
 class MyTasksViewController: UIViewController {
-    
-//    private lazy var myItems: [TodoItem] = [TodoItem(text: "Купить сыр", importance: .normal),
-//                                         TodoItem(text: "Сделать пиццу", importance: .low),
-//                                         TodoItem(id: "1", text: "Задание", importance: .normal, deadline:  Date(), isDone: false, created: Date(), changed: nil),
-//                                         TodoItem(id: "2", text: "Купить что - то", importance: .high, deadline: nil, isDone: false, created: Date(), changed: nil),
-//                                         TodoItem(id: "3", text: "Купить что - то", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-//                                         TodoItem(id: "4", text: "Купить что-то, где-то, зачем-то, но зачем не очень понятно", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-//                                         TodoItem(id: "5", text: "Купить что-то, где-то, зачем-то, но зачем не очень понятно, но точно чтобы показать как обрезается весь этот текст", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-//                                         TodoItem(id: "6", text: "Купить что - то", importance: .normal, deadline:  nil, isDone: true, created: Date(), changed: nil),
-//                                         TodoItem(text: "Проверка", importance: .low)
-//    ]
 
     private let todoItemsTableView = TodoItemsTableView(frame: .zero, style: .insetGrouped)
     

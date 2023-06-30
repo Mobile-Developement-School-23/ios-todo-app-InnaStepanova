@@ -9,7 +9,7 @@ import UIKit
 
 class TodoTableViewCell: UITableViewCell {
     
-    lazy var attributedString: NSAttributedString = .init(string: todoTextLabel.text ?? "")
+    lazy var attributedString2: NSMutableAttributedString = .init(string: todoTextLabel.text ?? "")
     
     let checkView: UIImageView = {
         let view = UIImageView()
@@ -130,14 +130,13 @@ class TodoTableViewCell: UITableViewCell {
     }
     
     override func prepareForReuse() {
-        todoTextLabel.text = ""
-        calendarStack.isHidden = true
-        let attributedString = NSMutableAttributedString(string: todoTextLabel.text ?? "")
-        attributedString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, attributedString.length))
-        todoTextLabel.attributedText = attributedString
+        todoTextLabel.attributedText = NSAttributedString(string: todoTextLabel.text ?? "", attributes: [NSAttributedString.Key.strikethroughStyle: 0])
+        todoTextLabel.textColor = Resources.Colors.primaryLabel
+        todoTextLabel.attributedText = attributedString2
     }
     
     func set(todo: TodoItem) {
+        todoTextLabel.text = todo.text
         
         if let deadline = todo.deadline {
             calendarStack.isHidden = false
@@ -166,15 +165,10 @@ class TodoTableViewCell: UITableViewCell {
         
         if todo.isDone {
             checkView.image = UIImage(named: "on")
-            let attributedString = NSMutableAttributedString(string: todo.text)
-            attributedString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributedString.length))
-            todoTextLabel.attributedText = attributedString
+            attributedString2.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributedString2.length))
+            todoTextLabel.attributedText = attributedString2
             todoTextLabel.textColor = Resources.Colors.tertiary
 
-        } else {
-            let attributedString = NSMutableAttributedString(string: todo.text)
-            attributedString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, attributedString.length))
-            todoTextLabel.attributedText = nil
         }
         todoTextLabel.text = todo.text
     }

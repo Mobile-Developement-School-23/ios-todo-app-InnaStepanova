@@ -13,27 +13,29 @@ protocol TodoItemsTableViewDelegate {
 
 class TodoItemsTableView: UITableView {
 
-    
-    
     var delegateTITW: TodoItemsTableViewDelegate!
-//    let detailVC = DetailViewController(todoItem: nil)
     
     private var stateIsDone = false {
         didSet {
             reloadData()
-            
         }
     }
-    private var todoItems: [TodoItem] = [TodoItem(text: "Купить сыр", importance: .normal),
-                                         TodoItem(text: "Сделать пиццу", importance: .low),
-                                         TodoItem(id: "1", text: "Задание", importance: .normal, deadline:  Date(), isDone: false, created: Date(), changed: nil),
-                                         TodoItem(id: "2", text: "Купить что - то", importance: .high, deadline: nil, isDone: false, created: Date(), changed: nil),
-                                         TodoItem(id: "3", text: "Купить что - то", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-                                         TodoItem(id: "4", text: "Купить что-то, где-то, зачем-то, но зачем не очень понятно", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-                                         TodoItem(id: "5", text: "Купить что-то, где-то, зачем-то, но зачем не очень понятно, но точно чтобы показать как обрезается весь этот текст", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-                                         TodoItem(id: "6", text: "Купить что - то", importance: .normal, deadline:  nil, isDone: true, created: Date(), changed: nil),
-                                         TodoItem(text: "Проверка", importance: .low)
-    ]
+    
+    var qtyIsDone: Int {
+        var count = 0
+        for item in todoItems {
+            if item.isDone {
+                count += 1
+            }
+        }
+        return count
+    }
+    
+    private var todoItems = DataManader.shared.getData() {
+        didSet {
+            headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
+        }
+    }
     
     let headerView = HeaderView()
     
@@ -46,6 +48,7 @@ class TodoItemsTableView: UITableView {
         register(TodoTableViewCell.self, forCellReuseIdentifier: "todoCell")
         register(NewTaskTableViewCell.self, forCellReuseIdentifier: "newTask")
         headerView.delegate = self
+        headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
        
     }
     
@@ -96,10 +99,30 @@ class TodoItemsTableView: UITableView {
             } else {
                 delegateTITW.tappedToCell(with: nil)
             }
-            
-            //            present(UINavigationController(rootViewController: detailVC), animated: true)
-            
         }
+        
+        func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+            let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { (actions) -> UIMenu? in
+                let action1 = UIAction(title: "Готово", image: UIImage(named: "on")) { (_) in
+                    print("Готово")
+                }
+                let deleteImage = UIImage(systemName: "trash")?.withTintColor(UIColor.red, renderingMode: .alwaysTemplate)
+                let action2 = UIAction(title: "Удалить", image: deleteImage) { (_) in
+                    print("Удалить")
+                }
+                
+                // Верните меню с созданными действиями
+                return UIMenu(title: "", children: [action1, action2])
+            }
+            
+            let filtredTodoItems = stateIsDone ? todoItems : todoItems.filter { $0.isDone == false }
+            if indexPath.row < filtredTodoItems.count {
+                return configuration
+            }
+            return nil
+        }
+
+
         
         func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
                 return headerView
@@ -213,10 +236,7 @@ class TodoItemsTableView: UITableView {
 
 extension TodoItemsTableView: HeaderViewDelegate {
     func showButtonTapped() {
-        
         stateIsDone.toggle()
-        headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: countIsDoneItems())
-        reloadData()
-        print("RELOAD")
+        headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
     }
 }

@@ -218,7 +218,7 @@ class TodoItemsTableView: UITableView {
                 }
                 let cellIndex = IndexPath(row: index, section: 0)
                 deleteRows(at: [cellIndex], with: .automatic)
-
+                DataManader.shared.delete(todoItem: todoItem)
             }
         }
 
@@ -235,6 +235,7 @@ class TodoItemsTableView: UITableView {
                 let cellIndex = IndexPath(row: 0, section: 0)
                 insertRows(at: [cellIndex], with: .automatic)
             }
+            DataManader.shared.save(todo: todoItem)
         }
     }
 

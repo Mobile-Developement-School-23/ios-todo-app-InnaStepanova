@@ -13,13 +13,12 @@ class DataManader {
 
     let cache = FileCache()
     var todoItems: [TodoItem] = []
-<<<<<<< HEAD
 
     func getFirstTodoItem() -> TodoItem? {
         cache.loadTodoItems(json: "inna")
         self.todoItems = cache.todoItems
         return todoItems.first
-=======
+    }
     
     func getData() -> [TodoItem] {
         cache.loadTodoItems(json: "inna")
@@ -42,7 +41,6 @@ class DataManader {
         } else {
             return todoItems
         }
->>>>>>> DZ3
     }
     
     func delete(todoItem: TodoItem) {

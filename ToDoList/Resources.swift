@@ -9,21 +9,21 @@ import UIKit
 
 enum Resources {
     enum Fonts {
-        static func sfProText400(with size:CGFloat) -> UIFont {
+        static func sfProText400(with size: CGFloat) -> UIFont {
             UIFont(name: "SFProText-Regular", size: size) ?? UIFont()
         }
-        static func sfProText600(with size:CGFloat) -> UIFont {
+        static func sfProText600(with size: CGFloat) -> UIFont {
             UIFont(name: "SFProText-Semibold", size: size) ?? UIFont()
         }
-        static func sfProDisplay600(with size:CGFloat) -> UIFont {
+        static func sfProDisplay600(with size: CGFloat) -> UIFont {
             UIFont(name: "SFProDisplay-Semibold", size: size) ?? UIFont()
         }
-        static func sfProDisplay700(with size:CGFloat) -> UIFont {
+        static func sfProDisplay700(with size: CGFloat) -> UIFont {
             UIFont(name: "SFProDisplay-Bold", size: size) ?? UIFont()
         }
 
     }
-    
+
     enum Colors {
         static let seporator = UIColor(named: "seporator")
         static let blueTodo = UIColor(named: "blueTodo")
@@ -42,7 +42,7 @@ enum Resources {
         static let secondaryLabel = UIColor(named: "secondaryLabel")
         static let tertiary = UIColor(named: "tertiary")
     }
-    
+
     enum Strings {
         static let detailTitle = "Дело"
         static let cancel = "Отменить"
@@ -54,6 +54,3 @@ enum Resources {
         static let myTascks = "Мои дела"
     }
 }
-
-
-

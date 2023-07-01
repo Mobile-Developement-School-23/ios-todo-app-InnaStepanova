@@ -3,12 +3,8 @@
 //  ToDoList
 //
 //  Created by Лаванда on 13.06.2023.
-//
-
 import Foundation
-
 class FileCache {
-    
     private(set) var todoItems: [TodoItem] = []
     func add(todoItem: TodoItem) {
         if let index = todoItems.firstIndex(where: { $0.id == todoItem.id }) {
@@ -17,20 +13,20 @@ class FileCache {
             todoItems.append(todoItem)
         }
     }
-    
+
     func delete(id: String) {
         todoItems.removeAll(where: { $0.id == id })
     }
-    
+
     func loadTodoItems(json: String) -> [TodoItem] {
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let filePath = directory.appendingPathComponent("\(json)")
-        
+
         do {
             let data = try Data(contentsOf: filePath)
             let json = try JSONSerialization.jsonObject(with: data)
             guard let jsonTodo = json as? [Any] else { return [] }
-            let todoItems = jsonTodo.compactMap{ TodoItem.parse(json: $0) }
+            let todoItems = jsonTodo.compactMap { TodoItem.parse(json: $0) }
             self.todoItems = todoItems
             return todoItems
         } catch let error {
@@ -38,12 +34,12 @@ class FileCache {
             return []
         }
     }
-    
+
     func saveTodoItems(to file: String) {
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let filePath = directory.appendingPathComponent("\(file)")
-        
-        let jsonArray = todoItems.map{ $0.json }
+
+        let jsonArray = todoItems.map { $0.json }
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: jsonArray)
             try jsonData.write(to: filePath)
@@ -51,7 +47,7 @@ class FileCache {
             print(jsonError)
         }
     }
-    
+
     func saveCSVTodoItems(to file: String) {
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let filePath = directory.appendingPathComponent("\(file).csv")
@@ -59,22 +55,20 @@ class FileCache {
         for item in todoItems {
             csv += item.csv
         }
-        
-        print (csv)
+
+        print(csv)
         do {
             try csv.write(to: filePath, atomically: false, encoding: .utf8)
-        }
-        catch {
+        } catch {
             print(error)
         }
-        
+
     }
-    
-    
+
     func loadTodoItemsFrom(CSV file: String) {
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let filePath = directory.appendingPathComponent("\(file).csv")
-        
+
         do {
             let data = try Data(contentsOf: filePath)
             if let csv = String(data: data, encoding: .utf8) {
@@ -84,7 +78,7 @@ class FileCache {
                     print("Файл CSV не содержит данных")
                     return
                 }
-                
+
                 let headers = csvRows[0].components(separatedBy: ",")
                 if headers.count == 7,
                    headers[0] == "id",
@@ -96,7 +90,7 @@ class FileCache {
                    headers[6] == "changed" {
                     csvRows.removeFirst()
                     print(csvRows.count)
-                    let todoItems = csvRows.compactMap{ TodoItem.parse(csv: $0) }
+                    let todoItems = csvRows.compactMap { TodoItem.parse(csv: $0) }
                     self.todoItems = todoItems
                 }
             } else {

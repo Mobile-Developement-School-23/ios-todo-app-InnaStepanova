@@ -9,10 +9,16 @@ import UIKit
 
 class DataManader {
     static let shared = DataManader()
-    private init(){}
-    
+    private init() {}
+
     let cache = FileCache()
     var todoItems: [TodoItem] = []
+
+    func getFirstTodoItem() -> TodoItem? {
+        cache.loadTodoItems(json: "inna")
+        self.todoItems = cache.todoItems
+        return todoItems.first
+    }
     
     func getData() -> [TodoItem] {
         cache.loadTodoItems(json: "inna")
@@ -42,8 +48,8 @@ class DataManader {
         cache.saveTodoItems(to: "inna")
     }
     
-    func save(todo: TodoItem) {
-        cache.add(todoItem: todo)
-        cache.saveTodoItems(to: "inna")
-    }
+        func save(todo: TodoItem) {
+            cache.add(todoItem: todo)
+            cache.saveTodoItems(to: "inna")
+        }
 }

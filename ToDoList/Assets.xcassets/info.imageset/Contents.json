@@ -1,15 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "sign.pdf",
+      "filename" : "info.pdf",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "template-rendering-intent" : "original"
   }
 }

@@ -51,5 +51,6 @@ enum Resources {
         static let doBefore = "Сделать до"
         static let delete = "Удалить"
         static let placeholder = "Что нужно сделать"
+        static let myTascks = "Мои дела"
     }
 }

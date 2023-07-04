@@ -27,7 +27,7 @@ class DataManader {
             
             let startTodoItems = [TodoItem(text: "Купить сыр", importance: .normal),
                                   TodoItem(text: "Сделать пиццу", importance: .low),
-                                  TodoItem(id: "1", text: "Задание", importance: .normal, deadline:  Date(), isDone: false, created: Date(), changed: nil),
+                                  TodoItem(id: "1", text: "Задание", importance: .normal, deadline: Date(), isDone: false, created: Date(), changed: nil),
                                   TodoItem(id: "2", text: "Купить что - то", importance: .high, deadline: nil, isDone: false, created: Date(), changed: nil),
                                   TodoItem(id: "3", text: "Купить что - то", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
                                   TodoItem(id: "4", text: "Купить что-то, где-то, зачем-то, но зачем не очень понятно", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),

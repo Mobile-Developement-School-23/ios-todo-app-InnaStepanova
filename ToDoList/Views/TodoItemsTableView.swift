@@ -169,7 +169,7 @@ class TodoItemsTableView: UITableView {
         }
         
         func doneAction(at indexPath: IndexPath) -> UIContextualAction {
-            let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+            let action = UIContextualAction(style: .normal, title: nil) { (_, _, completion) in
                 self.doneTodoItem(at: indexPath)
                 completion(true)
                 
@@ -181,7 +181,7 @@ class TodoItemsTableView: UITableView {
         }
         
         func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
-            let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+            let action = UIContextualAction(style: .normal, title: nil) { (_, _, completion) in
             self.deleteTodoItem(at: indexPath)
                 completion(true)
                 
@@ -193,7 +193,7 @@ class TodoItemsTableView: UITableView {
         }
         
         func informationAction(at indexPath: IndexPath) -> UIContextualAction {
-            let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+            let action = UIContextualAction(style: .normal, title: nil) { (_, _, completion) in
                 //        ЧТОТО ЧТО ДЕЛАЕМ ДЛЯ ПОКАЗА ИНФОРМАЦИИ
                 completion(true)
                 
@@ -203,9 +203,6 @@ class TodoItemsTableView: UITableView {
             action.image = image
             return action
         }
-        
-        
-        
         
     }
 
@@ -239,15 +236,9 @@ class TodoItemsTableView: UITableView {
         }
     }
 
-
-
-
 extension TodoItemsTableView: HeaderViewDelegate {
     func showButtonTapped() {
         stateIsDone.toggle()
         headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
     }
 }
-
-
-

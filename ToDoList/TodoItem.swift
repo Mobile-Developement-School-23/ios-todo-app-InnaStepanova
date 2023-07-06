@@ -13,7 +13,7 @@ enum Importance: String {
     case high
 }
 
-struct TodoItem {
+struct TodoItem: Equatable {
     let id: String
     var text: String
     var importance: Importance

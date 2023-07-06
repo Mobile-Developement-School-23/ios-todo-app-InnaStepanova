@@ -10,6 +10,8 @@ import UIKit
 class TodoTableViewCell: UITableViewCell {
     
     lazy var attributedString2: NSMutableAttributedString = .init(string: todoTextLabel.text ?? "")
+    lazy var attributeString: NSMutableAttributedString = .init(string: todoTextLabel.text ?? "")
+    var const: NSLayoutConstraint!
     
     let checkView: UIImageView = {
         let view = UIImageView()
@@ -75,8 +77,10 @@ class TodoTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        const = todoVerticalStack.leadingAnchor.constraint(equalTo: importanceView.trailingAnchor, constant: 2)
         accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
         backgroundColor = Resources.Colors.secondaryBack
+
         addViews()
         setConstraints()
     }
@@ -105,13 +109,12 @@ class TodoTableViewCell: UITableViewCell {
         deadlineLabel.translatesAutoresizingMaskIntoConstraints = false
         deadlineView.translatesAutoresizingMaskIntoConstraints = false
         importanceView.translatesAutoresizingMaskIntoConstraints = false
-        
+        print("Constraint")
         NSLayoutConstraint.activate([
             checkView.centerYAnchor.constraint(equalTo: centerYAnchor),
             checkView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             
             todoVerticalStack.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-//            todoVerticalStack.leadingAnchor.constraint(equalTo: importanceView.trailingAnchor, constant: 2),
             todoVerticalStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32),
             todoVerticalStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
             
@@ -123,24 +126,29 @@ class TodoTableViewCell: UITableViewCell {
             checkView.widthAnchor.constraint(equalToConstant: 24),
             
             importanceView.heightAnchor.constraint(equalToConstant: 20),
+            importanceView.widthAnchor.constraint(equalToConstant: 20),
             
             deadlineView.heightAnchor.constraint(equalToConstant: 16),
-            deadlineView.widthAnchor.constraint(equalToConstant: 16)
+            deadlineView.widthAnchor.constraint(equalToConstant: 16),
         ])
     }
     
     override func prepareForReuse() {
         calendarStack.isHidden = true
-        todoTextLabel.attributedText = NSAttributedString(string: todoTextLabel.text ?? "", attributes: [NSAttributedString.Key.strikethroughStyle: 0])
+//        attributeString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, attributeString.length))
+        todoTextLabel.attributedText = NSAttributedString(string: todoTextLabel.text ?? "", attributes: [:])
+        print("PREPARE")
         todoTextLabel.textColor = Resources.Colors.primaryLabel
-        todoTextLabel.attributedText = attributedString2
+        checkView.image = nil
+        importanceView.image = nil
+        importanceView.isHidden = true
+
+//        todoTextLabel.attributedText = attributeString
     }
     
     func set(todo: TodoItem) {
-        
+        print("SET")
         if let deadline = todo.deadline {
-            todoVerticalStack.leadingAnchor.constraint(equalTo: checkView.trailingAnchor, constant: 12).isActive = false
-            importanceView.image = nil
             calendarStack.isHidden = false
             let formatter = DateFormatter()
             formatter.dateFormat = "dd MMMM"
@@ -152,28 +160,36 @@ class TodoTableViewCell: UITableViewCell {
             
         case .low:
             checkView.image = UIImage(named: "off")
+            importanceView.isHidden = false
             importanceView.image = UIImage(named: "arrov")
-            todoVerticalStack.leadingAnchor.constraint(equalTo: importanceView.trailingAnchor, constant: 2).isActive = true
+            const = todoVerticalStack.leadingAnchor.constraint(equalTo: importanceView.trailingAnchor, constant: 2)
+            const.isActive = true
         case .normal:
+            importanceView.isHidden = true
             checkView.image = UIImage(named: "off")
-            todoVerticalStack.leadingAnchor.constraint(equalTo: checkView.trailingAnchor, constant: 12).isActive = true
+            const = todoVerticalStack.leadingAnchor.constraint(equalTo: checkView.trailingAnchor, constant: 12)
+            const.isActive = true
             
         case .high:
+            print("ВАЖНОСТЬ ВЫСОКАЯ")
             checkView.image = UIImage(named: "HighPriority")
+            importanceView.isHidden = false
             importanceView.image = UIImage(named: "sign")
-            todoVerticalStack.leadingAnchor.constraint(equalTo: importanceView.trailingAnchor, constant: 2).isActive = true
+            const = todoVerticalStack.leadingAnchor.constraint(equalTo: importanceView.trailingAnchor, constant: 2)
+            const.isActive = true
         }
         
         if todo.isDone {
             checkView.image = UIImage(named: "on")
-            attributedString2.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributedString2.length))
-            todoTextLabel.attributedText = attributedString2
+            attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributeString.length))
+//            attributedString2.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 2, range: NSMakeRange(0, attributedString2.length))
+            todoTextLabel.attributedText = attributeString
             todoTextLabel.textColor = Resources.Colors.tertiary
 
         } else {
             todoTextLabel.attributedText = NSAttributedString(string: todoTextLabel.text ?? "", attributes: [NSAttributedString.Key.strikethroughStyle: 0])
             todoTextLabel.textColor = Resources.Colors.primaryLabel
-            todoTextLabel.attributedText = attributedString2
+//            todoTextLabel.attributedText = attributeString
         }
         todoTextLabel.text = todo.text
     }

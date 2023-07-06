@@ -1,13 +1,13 @@
 //
-//  TodoTableViewCell.swift
+//  2TodoTableViewCell.swift
 //  ToDoList
 //
-//  Created by Лаванда on 26.06.2023.
+//  Created by Лаванда on 06.07.2023.
 //
 
 import UIKit
 
-class TodoTableViewCell: UITableViewCell {
+class TodoTableViewCell2: UITableViewCell {
     
         lazy var attributeString: NSMutableAttributedString = .init(string: todoTextLabel.text ?? "")
         var const: NSLayoutConstraint!
@@ -169,3 +169,4 @@ class TodoTableViewCell: UITableViewCell {
         }
 
     }
+

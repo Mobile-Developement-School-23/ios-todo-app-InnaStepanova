@@ -12,6 +12,6 @@ protocol NetworkingService {
     func addTodoItem(_ todoItem: TodoItem, completion: @escaping (Bool) -> Void)
     func deleteTodoItem(_ todoItem: TodoItem, completion: @escaping (Bool) -> Void)
     func changeTodoItem(_ todoItem: TodoItem, completion: @escaping (Bool) -> Void)
-    func updateTodoItems(_ todoItems: [TodoItem],completion: @escaping(TasksBack) -> Void)
+    func updateTodoItems(_ todoItems: [TodoItem],completion: @escaping (Result<(data: Data, response: URLResponse), Error>) -> Void)
     func getTodoItem(id: String, completion: @escaping(TaskBack) -> Void)
 }

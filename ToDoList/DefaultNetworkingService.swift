@@ -15,8 +15,13 @@ enum HTTPMethod: String {
     case patch = "PATCH"
 }
 
+protocol DefaultNetworkingServiceDelegate {
+    func updateData(todoItems: [TodoItem])
+}
+
 class DefaultNetworkingService {
     
+    var delegate: DefaultNetworkingServiceDelegate!
     let urlString = Resources.Strings.baseURL
     var revision = 12
     
@@ -174,33 +179,23 @@ extension DefaultNetworkingService: NetworkingService {
         completion(isSuccess)
     }
     
-    func updateTodoItems(_ todoItems: [TodoItem],completion: @escaping(TasksBack) -> Void) {
-        guard let url = getURL(id: nil) else {return}
-        var request = getRequest(method: .patch, url: url, revision: revision)
-        
-        let elements = todoItems.map { $0.jsonBack }
-        let todoBack: [String : Any] = ["list" : elements, "status" : "Ok", "revision" : revision]
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: todoBack, options: []) else { return }
-        request.httpBody = httpBody
-        
-        URLSession.shared.dataTask(with: request) { data, responce, error in
-            if let error = error {
-                print(error)
-                return
-            }
-                
-                guard let data = data, let responce = responce else {return}
-                do {
-                    if let responce = responce as? HTTPURLResponse {
-                        print("Status code: \(responce.statusCode)")
+    func updateTodoItems(_ todoItems: [TodoItem],completion: @escaping (Result<(data: Data, response: URLResponse), Error>) -> Void) {
+        DispatchQueue.global(qos: .userInteractive).async {
+            guard let url = self.getURL(id: nil) else {return}
+            var request = self.getRequest(method: .patch, url: url, revision: self.revision)
+            let elements = todoItems.map { $0.jsonBack }
+            let todoBack: [String : Any] = ["list" : elements, "status" : "Ok", "revision" : self.revision]
+            guard let httpBody = try? JSONSerialization.data(withJSONObject: todoBack, options: []) else { return }
+            request.httpBody = httpBody
+            URLSession.shared.dataTask(with: request) { data, responce, error in
+                    if let error = error {
+                        completion(.failure(error))
+                        return
                     }
-                    
-                    let todoItems = try JSONDecoder().decode(TasksBack.self, from: data)
-                    completion(todoItems)
-                } catch let error {
-                    print("Parse JSON Error \(error)")
-                }
-        }.resume()
+                    guard let data = data, let response = responce else { return }
+                    completion(.success((data: data, response: response)))
+            }.resume()
+        }
     }
     
     func getTodoItem(id: String, completion: @escaping(TaskBack) -> Void) {
@@ -228,4 +223,38 @@ extension DefaultNetworkingService: NetworkingService {
 
 }
 
-
+extension DefaultNetworkingService {
+    //    Retry
+    
+    func retryWithExponentialBackoff(delay: Double, retries: Int, list: [TodoItem]) {
+        
+        let maxDelay = 120.0  // Максимальная задержка в секундах
+        let factor = 1.5  // Фактор увеличения задержки
+        let jitter = 0.05  // Разброс задержки
+        
+        while retries <= 5 {
+            
+            DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
+                self.updateTodoItems(list) { [weak self] result in
+                    guard let strongSelf = self else { return }
+                    switch result {
+                    case .failure(let error) :
+                        print(error)
+                        let updateDelay = min(maxDelay, delay * factor) * (1 + Double.random(in: -jitter...jitter))
+                        strongSelf.retryWithExponentialBackoff(delay: updateDelay, retries: retries + 1, list: list)
+                    case .success((let data, let responce)) :
+                        guard let response = responce as? HTTPURLResponse else { return }
+                        if response.statusCode == 200 {
+                            let tasks = try? JSONDecoder().decode(TasksBack.self, from: data)
+                            if let tasks = tasks {
+                            let todoItems = tasks.list.map { $0.toTodoItem }
+//                            strongSelf.delegate.updateData(todoItems: todoItems)
+                            }
+                        }
+                    }
+                }
+            }
+            //Retry не принес результатов получаем актуальные данные от сервера
+        }
+    }
+}

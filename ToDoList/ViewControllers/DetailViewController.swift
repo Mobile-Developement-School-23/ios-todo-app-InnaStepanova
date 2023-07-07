@@ -160,7 +160,7 @@ class DetailViewController: UIViewController {
         addNavBarButton(at: .left, and: Resources.Strings.cancel)
         addNavBarButton(at: .right, and: Resources.Strings.save)
         
-        if textView.text == Resources.Strings.placeholder {
+        if textView.text == Resources.Strings.placeholder, textView.textColor == Resources.Colors.tertiary {
             navigationItem.rightBarButtonItem?.isEnabled = false
         }
     }
@@ -238,7 +238,7 @@ extension DetailViewController: DeleteButtonDelegate {
 extension DetailViewController: UITextViewDelegate {
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        if textView.text == Resources.Strings.placeholder {
+        if textView.text == Resources.Strings.placeholder, textView.textColor == Resources.Colors.tertiary {
             textView.text = nil
             textView.textColor = Resources.Colors.primaryLabel
             navigationItem.rightBarButtonItem?.isEnabled = false

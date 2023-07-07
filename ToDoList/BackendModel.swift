@@ -14,7 +14,7 @@ struct TasksBack: Codable {
 
 struct TaskBack: Codable {
     let element: TodoItemBack
-    let revision: Int32
+    let revision: Int
 }
 
 struct TodoItemBack: Codable {
@@ -26,4 +26,35 @@ struct TodoItemBack: Codable {
     let created_at: Int64
     var changed_at: Int64?
     var last_updated_by: String
+}
+
+extension TodoItemBack {
+    var toTodoItem: TodoItem {
+        
+        let importanceTodo: Importance
+        switch importance {
+        case "low" : importanceTodo = .low
+        case "basic" : importanceTodo = .normal
+        case "important" : importanceTodo = .high
+        default: importanceTodo = .normal
+        }
+        
+        var deadlineTodo: Date? = nil
+        if let deadline = deadline {
+            deadlineTodo = Date(timeIntervalSince1970: TimeInterval(deadline))
+        }
+        
+        var changeTodo: Date? = nil
+        if let change = changed_at {
+            changeTodo = Date(timeIntervalSince1970: TimeInterval(change))
+        }
+        
+        return TodoItem(id: id,
+                        text: text,
+                        importance: importanceTodo,
+                        deadline: deadlineTodo,
+                        isDone: done,
+                        created: Date(timeIntervalSince1970: TimeInterval(created_at)),
+                        changed: changeTodo)
+        }
 }

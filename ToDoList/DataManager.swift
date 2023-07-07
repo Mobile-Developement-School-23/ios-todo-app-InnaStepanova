@@ -10,38 +10,55 @@ import UIKit
 class DataManader {
     static let shared = DataManader()
     private init() {}
-
+    
+    let networkingService = DefaultNetworkingService()
     let cache = FileCache()
     var todoItems: [TodoItem] = []
-
-    func getFirstTodoItem() -> TodoItem? {
-        cache.loadTodoItems(json: "inna")
-        self.todoItems = cache.todoItems
-        return todoItems.first
-    }
     
-    func getData() -> [TodoItem] {
-        cache.loadTodoItems(json: "inna")
-        self.todoItems = cache.todoItems
-        if todoItems.isEmpty {
-            
-            let startTodoItems = [TodoItem(text: "Купить сыр", importance: .normal),
-                                  TodoItem(text: "Сделать пиццу", importance: .low),
-                                  TodoItem(id: "1", text: "Задание", importance: .normal, deadline:  Date(), isDone: false, created: Date(), changed: nil),
-                                  TodoItem(id: "2", text: "Купить что - то", importance: .high, deadline: nil, isDone: false, created: Date(), changed: nil),
-                                  TodoItem(id: "3", text: "Купить что - то", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-                                  TodoItem(id: "4", text: "Купить что-то, где-то, зачем-то, но зачем не очень понятно", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-                                  TodoItem(id: "5", text: "Купить что-то, где-то, зачем-то, но зачем не очень понятно, но точно чтобы показать как обрезается весь этот текст", importance: .normal, deadline:  nil, isDone: false, created: Date(), changed: nil),
-                                  TodoItem(id: "6", text: "Купить что - то", importance: .normal, deadline:  nil, isDone: true, created: Date(), changed: nil),
-                                  TodoItem(text: "Проверка", importance: .low)
-                              ]
-            self.todoItems = startTodoItems
-            cache.saveTodoItems(to: "inna")
-            return startTodoItems
-        } else {
-            return todoItems
+    func getData(completion: @escaping ([TodoItem]) -> Void) {
+        networkingService.fetchTodoItems { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success((let data, let responce)) :
+                print("RESPONCE \(responce)")
+                guard let response = responce as? HTTPURLResponse else { return }
+                if response.statusCode == 200 {
+                    if data != nil {
+                        do {
+                            let tasks = try JSONDecoder().decode(TasksBack.self, from: data)
+                            strongSelf.networkingService.revision = tasks.revision
+                            print("РЕВИЗИЯ = \(tasks.revision)")
+                            print("ПОЛУЧЕНО \(tasks.list.count) элементов")
+                            let todoItems = tasks.list.map { $0.toTodoItem }
+                            print("TODOITEMS после DECODE \(todoItems)")
+                            completion(todoItems)
+                        } catch {
+                            print("Не удалось декодировать данные")
+                            DispatchQueue.global(qos: .userInteractive).async {
+                                strongSelf.cache.loadTodoItems(json: "inna")
+                                completion(strongSelf.cache.todoItems)
+                            }
+                        }
+                    } else {
+                        DispatchQueue.global(qos: .userInteractive).async {
+                            strongSelf.cache.loadTodoItems(json: "inna")
+                            completion(strongSelf.cache.todoItems)
+                        }
+                    }
+                }
+                
+            case .failure(let error) :
+                print("ERROR - Данные из сети не были загружены \(error)")
+//                Если данные из сетине были загружены берем данные из файла на локальном хранилище
+                DispatchQueue.global(qos: .userInteractive).async {
+                    strongSelf.cache.loadTodoItems(json: "inna")
+                    completion(strongSelf.cache.todoItems)
+                }
+            }
         }
     }
+    
+    
     
     func delete(todoItem: TodoItem) {
         cache.delete(id: todoItem.id)

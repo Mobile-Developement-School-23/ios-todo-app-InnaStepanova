@@ -18,7 +18,7 @@ enum HTTPMethod: String {
 class DefaultNetworkingService {
     
     let urlString = Resources.Strings.baseURL
-    let revizion = 11
+    var revision = 12
     
     func getURL(id: String?) -> URL? {
         if let id = id {
@@ -49,97 +49,137 @@ class DefaultNetworkingService {
         }
         return request
     }
-    
 }
 
 extension DefaultNetworkingService: NetworkingService {
+    
+    
+    func fetchTodoItems(completion: @escaping (Result<(data: Data, response: URLResponse), Error>) -> Void) {
+        guard let url = getURL(id: nil) else { return }
+        let request = getRequest(method: .get, url: url, revision: revision)
         
-    func fetchTodoItems (completion: @escaping(TasksBack) -> Void) {
-        guard let url = getURL(id: nil) else {return}
-        let request = getRequest(method: .get, url: url, revision: revizion)
-        
-        URLSession.shared.dataTask(with: request) { data, responce, error in
-            if let error = error {
-                print("URLSession error \(error)")
-                return
-            }
+        DispatchQueue.global(qos: .userInteractive).async {
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
                 
-            guard let data = data, let responce = responce else {return}
-                do {
-                    if let responce = responce as? HTTPURLResponse {
-                        print("Status code: \(responce.statusCode)")
-                    }
-        
-                    let todoItems = try JSONDecoder().decode(TasksBack.self, from: data)
-                    completion(todoItems)
-                    } catch let error {
-                        print("Parse JSON Error \(error)")
-            }
-        }.resume()
+                guard let data = data, let response = response else { return }
+                
+                completion(.success((data: data, response: response)))
+            }.resume()
+        }
     }
+
     
-    func addTodoItem(_ todoItem: TodoItem) {
+    func addTodoItem(_ todoItem: TodoItem, completion: @escaping (Bool) -> Void) {
+        var isSuccess = false
         guard let url = getURL(id: nil) else {return}
-        var request = getRequest(method: .post, url: url, revision: revizion)
+        var request = getRequest(method: .post, url: url, revision: revision)
         
         let element = todoItem.jsonBack
-        let todoBack: [String : Any] = ["element" : element, "status" : "Ok", "revision" : revizion]
+        let todoBack: [String : Any] = ["element" : element, "status" : "Ok", "revision" : revision]
         
         guard let httpBody = try? JSONSerialization.data(withJSONObject: todoBack, options: []) else { return }
         request.httpBody = httpBody
-        
-        URLSession.shared.dataTask(with: request) { _, responce, error in
-            if let error = error {
-                print(error)
-                return
-            }
-            if let responce = responce as? HTTPURLResponse {
-                print("Status code: \(responce.statusCode)")
-            }
-        }.resume()
+        DispatchQueue.global(qos: .userInteractive).async {
+            URLSession.shared.dataTask(with: request) { data , responce, error in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                if let responce = responce as? HTTPURLResponse {
+                    if responce.statusCode == 200 {
+                        isSuccess = true
+                        
+                    }
+                    if let data = data {
+                        do {
+                            let task = try JSONDecoder().decode(TaskBack.self, from: data)
+                            self.revision = task.revision
+                            
+                        } catch {
+                            
+                        }
+                    }
+                }
+            }.resume()
+        }
+    completion(isSuccess)
     }
     
-    func deleteTodoItem(_ todoItem: TodoItem) {
+    func deleteTodoItem(_ todoItem: TodoItem, completion: @escaping (Bool) -> Void) {
         guard let url = getURL(id: todoItem.id) else {return}
-        var request = getRequest(method: .delete, url: url, revision: revizion)
-        
-        URLSession.shared.dataTask(with: request) { data, responce, error in
-            if let error = error {
-                print(error)
-                return
-            }
-            if let responce = responce as? HTTPURLResponse {
-                print("Status code: \(responce.statusCode)")
-            }
-        }.resume()
+        var isSuccess = false
+        let request = getRequest(method: .delete, url: url, revision: revision)
+        DispatchQueue.global(qos: .userInteractive).async {
+            URLSession.shared.dataTask(with: request) { data, responce, error in
+                if let error = error {
+                    print(error)
+                }
+                if let responce = responce as? HTTPURLResponse {
+                    if responce.statusCode == 200 {
+                        isSuccess = true
+                    }
+                }
+                if let data = data {
+                    do {
+                        let task = try JSONDecoder().decode(TaskBack.self, from: data)
+                        self.revision = task.revision
+                        
+                    } catch {
+                        
+                    }
+                }
+
+            }.resume()
+        }
+        completion(isSuccess)
     }
     
-    func changeTodoItem(_ todoItem: TodoItem) {
-        guard let url = getURL(id: todoItem.id) else {return}
-        var request = getRequest(method: .put, url: url, revision: revizion)
-        
-        let element = todoItem.jsonBack
-        let todoBack: [String : Any] = ["element" : element, "status" : "Ok", "revision" : revizion]
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: todoBack, options: []) else { return }
-        request.httpBody = httpBody
-        
-        URLSession.shared.dataTask(with: request) { data, responce, error in
-            if let error = error {
-                print(error)
-                return
-            }
-            if let responce = responce as? HTTPURLResponse {
-                print("Status code: \(responce.statusCode)")
-            }
-        }.resume()
+    func changeTodoItem(_ todoItem: TodoItem, completion: @escaping (Bool) -> Void) {
+        var isSuccess = false
+        DispatchQueue.global(qos: .userInteractive).async {
+            guard let url = self.getURL(id: todoItem.id) else {return}
+            var request = self.getRequest(method: .put, url: url, revision: self.revision)
+            
+            let element = todoItem.jsonBack
+            let todoBack: [String : Any] = ["element" : element, "status" : "Ok", "revision" : self.revision]
+            guard let httpBody = try? JSONSerialization.data(withJSONObject: todoBack, options: []) else { return }
+            request.httpBody = httpBody
+            
+            URLSession.shared.dataTask(with: request) { data, responce, error in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                if let responce = responce as? HTTPURLResponse {
+                    if responce.statusCode == 200 {
+                        isSuccess = true
+                    }
+                }
+                if let data = data {
+                    do {
+                        let task = try JSONDecoder().decode(TaskBack.self, from: data)
+                        self.revision = task.revision
+                        
+                    } catch {
+                        
+                    }
+                }
+
+            }.resume()
+        }
+        completion(isSuccess)
     }
     
     func updateTodoItems(_ todoItems: [TodoItem],completion: @escaping(TasksBack) -> Void) {
         guard let url = getURL(id: nil) else {return}
-        var request = getRequest(method: .patch, url: url, revision: revizion)
+        var request = getRequest(method: .patch, url: url, revision: revision)
         
         let elements = todoItems.map { $0.jsonBack }
-        let todoBack: [String : Any] = ["list" : elements, "status" : "Ok", "revision" : revizion]
+        let todoBack: [String : Any] = ["list" : elements, "status" : "Ok", "revision" : revision]
         guard let httpBody = try? JSONSerialization.data(withJSONObject: todoBack, options: []) else { return }
         request.httpBody = httpBody
         
@@ -148,23 +188,24 @@ extension DefaultNetworkingService: NetworkingService {
                 print(error)
                 return
             }
-            guard let data = data, let responce = responce else {return}
+                
+                guard let data = data, let responce = responce else {return}
                 do {
                     if let responce = responce as? HTTPURLResponse {
                         print("Status code: \(responce.statusCode)")
                     }
-        
+                    
                     let todoItems = try JSONDecoder().decode(TasksBack.self, from: data)
                     completion(todoItems)
-                    } catch let error {
-                        print("Parse JSON Error \(error)")
-            }
+                } catch let error {
+                    print("Parse JSON Error \(error)")
+                }
         }.resume()
     }
     
     func getTodoItem(id: String, completion: @escaping(TaskBack) -> Void) {
         guard let url = getURL(id: id) else {return}
-        let request = getRequest(method: .get, url: url, revision: revizion)
+        let request = getRequest(method: .get, url: url, revision: revision)
         
         URLSession.shared.dataTask(with: request) { data, responce, error in
             if let error = error {
@@ -186,3 +227,5 @@ extension DefaultNetworkingService: NetworkingService {
     }
 
 }
+
+

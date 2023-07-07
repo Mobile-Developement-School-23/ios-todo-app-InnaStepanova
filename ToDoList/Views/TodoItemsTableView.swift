@@ -31,9 +31,22 @@ class TodoItemsTableView: UITableView {
         return count
     }
     
-    private var todoItems = DataManader.shared.getData() {
+    private var todoItems: [TodoItem] = [] {
         didSet {
             headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
+        }
+    }
+    
+    private var isDurty = false {
+        didSet {
+            if isDurty {
+                DispatchQueue.global(qos: .userInteractive).async {
+                    for todo in self.todoItems {
+                        DataManader.shared.cache.add(todoItem: todo)
+                    }
+                    DataManader.shared.cache.saveTodoItems(to: "cache")
+                }
+            }
         }
     }
     
@@ -41,6 +54,12 @@ class TodoItemsTableView: UITableView {
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
+        DataManader.shared.getData { tasks in
+            DispatchQueue.main.async {
+                self.todoItems = tasks
+                self.reloadData()
+            }
+        }
         delegate = self
         dataSource = self
         backgroundColor = Resources.Colors.primaryBack
@@ -157,15 +176,27 @@ class TodoItemsTableView: UITableView {
             } else {
                 self.deleteRows(at: [indexPath], with: .automatic)
             }
+            DataManader.shared.networkingService.changeTodoItem(item) { isSuccess in
+                if !isSuccess {
+                    self.isDurty = true
+                }
+            }
         }
         
         func deleteTodoItem(at indexPath: IndexPath) {
+            
                 let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
                 let item = filtredTodoItems[indexPath.row]
                 if let index = self.todoItems.firstIndex(where: { $0.id == item.id }) {
                     self.todoItems.remove(at: index)
                 }
                 self.deleteRows(at: [indexPath], with: .automatic)
+            
+            DataManader.shared.networkingService.deleteTodoItem(item) { isSuccess in
+                if !isSuccess {
+                    self.isDurty = true
+                }
+            }
         }
         
         func doneAction(at indexPath: IndexPath) -> UIContextualAction {
@@ -204,13 +235,17 @@ class TodoItemsTableView: UITableView {
             return action
         }
         
-        
-        
-        
     }
 
     extension TodoItemsTableView: DetailViewControllerDelegate {
         func delete(todoItem: TodoItem) {
+            
+            DataManader.shared.networkingService.deleteTodoItem(todoItem) { isSuccess in
+                if !isSuccess {
+                    self.isDurty = true
+                }
+            }
+            
             let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
             if let index = filtredTodoItems.firstIndex(where: { $0.id == todoItem.id }) {
                 if let index = self.todoItems.firstIndex(where: { $0.id == todoItem.id }) {
@@ -218,7 +253,6 @@ class TodoItemsTableView: UITableView {
                 }
                 let cellIndex = IndexPath(row: index, section: 0)
                 deleteRows(at: [cellIndex], with: .automatic)
-                DataManader.shared.delete(todoItem: todoItem)
             }
         }
 
@@ -230,12 +264,22 @@ class TodoItemsTableView: UITableView {
                 }
                 let cellIndex = IndexPath(row: index, section: 0)
                 reloadRows(at: [cellIndex], with: .automatic)
+                DataManader.shared.networkingService.changeTodoItem(todoItem) { isSucces in
+                    if !isSucces {
+                        self.isDurty = true
+                    }
+                }
+                
             } else {
                 self.todoItems.insert(todoItem, at: 0)
                 let cellIndex = IndexPath(row: 0, section: 0)
                 insertRows(at: [cellIndex], with: .automatic)
+                DataManader.shared.networkingService.addTodoItem(todoItem) { isSuccess in
+                    if !isSuccess {
+                        self.isDurty = true
+                    }
+                }
             }
-            DataManader.shared.save(todo: todoItem)
         }
     }
 

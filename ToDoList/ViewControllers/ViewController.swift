@@ -17,6 +17,6 @@ class ViewController: UIViewController {
         
         let todo = TodoItem(id: "CB2C9109-9CDB-46CC", text: "ИННА изменила JSON через методы", importance: .high, deadline: Date(), isDone: false, created: Date(), changed: Date())
         let nm = DefaultNetworkingService()
-        nm.deleteTodoItem(todo)
+    
         }
 }

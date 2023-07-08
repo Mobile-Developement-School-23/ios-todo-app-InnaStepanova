@@ -15,6 +15,9 @@ class TodoItemsTableView: UITableView {
 
     var delegateTITW: TodoItemsTableViewDelegate!
     
+    var networkingService = DefaultNetworkingService()
+    var cache = FileCache()
+    
     private var stateIsDone = false {
         didSet {
             reloadData()
@@ -40,11 +43,20 @@ class TodoItemsTableView: UITableView {
     private var isDurty = false {
         didSet {
             if isDurty {
+                print("IS DURTY TRUE")
+                DispatchQueue.main.async {
+                    self.headerView.actityIndicator.startAnimating()
+                }
                 DispatchQueue.global(qos: .userInteractive).async {
                     for todo in self.todoItems {
-                        DataManader.shared.cache.add(todoItem: todo)
+                        self.cache.add(todoItem: todo)
                     }
-                    DataManader.shared.cache.saveTodoItems(to: "cache")
+                    self.cache.saveTodoItems(to: "cache")
+                    self.networkingService.retryWithExponentialBackoff(delay: 2.0, retries: 0, list: self.todoItems)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.headerView.actityIndicator.stopAnimating()
                 }
             }
         }
@@ -54,12 +66,14 @@ class TodoItemsTableView: UITableView {
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
-        DataManader.shared.getData { tasks in
+        getData { todoItems in
             DispatchQueue.main.async {
-                self.todoItems = tasks
+                self.todoItems = todoItems
                 self.reloadData()
+                self.headerView.actityIndicator.stopAnimating()
             }
         }
+        networkingService.delegate = self
         delegate = self
         dataSource = self
         backgroundColor = Resources.Colors.primaryBack
@@ -176,9 +190,15 @@ class TodoItemsTableView: UITableView {
             } else {
                 self.deleteRows(at: [indexPath], with: .automatic)
             }
-            DataManader.shared.networkingService.changeTodoItem(item) { isSuccess in
+            DispatchQueue.main.async {
+                self.headerView.actityIndicator.startAnimating()
+            }
+            self.networkingService.changeTodoItem(item) { isSuccess in
                 if !isSuccess {
                     self.isDurty = true
+                }
+                DispatchQueue.main.async {
+                    self.headerView.actityIndicator.stopAnimating()
                 }
             }
         }
@@ -192,7 +212,7 @@ class TodoItemsTableView: UITableView {
                 }
                 self.deleteRows(at: [indexPath], with: .automatic)
             
-            DataManader.shared.networkingService.deleteTodoItem(item) { isSuccess in
+            self.networkingService.deleteTodoItem(item) { isSuccess in
                 if !isSuccess {
                     self.isDurty = true
                 }
@@ -235,12 +255,48 @@ class TodoItemsTableView: UITableView {
             return action
         }
         
+        func getData(completion: @escaping ([TodoItem]) -> Void) {
+            DispatchQueue.main.async {
+                self.headerView.actityIndicator.startAnimating()
+            }
+            networkingService.fetchTodoItems { [weak self] result in
+                guard let strongSelf = self else { return }
+                switch result {
+                case.failure(let error) :
+                    print("не удалось получить данные из сети, загрузка данных из файла")
+                    DispatchQueue.global(qos: .userInteractive).async {
+                        strongSelf.cache.loadTodoItems(json: "cache")
+                        completion(strongSelf.cache.todoItems)
+                    }
+                case .success((let data, let responce)) :
+                    print("RESPONCE \(responce)")
+                    guard let response = responce as? HTTPURLResponse else { return }
+                    if response.statusCode == 200 {
+                        if data != nil {
+                            do {
+                                let tasks = try JSONDecoder().decode(TasksBack.self, from: data)
+                                strongSelf.networkingService.revision = tasks.revision
+                                let todoItems = tasks.list.map { $0.toTodoItem }
+                                print("TODOITEMS после DECODE \(todoItems)")
+                                completion(todoItems)
+                            } catch {
+                                print("Не удалось декодировать данные")
+                                DispatchQueue.global(qos: .userInteractive).async {
+                                    strongSelf.cache.loadTodoItems(json: "cache")
+                                    completion(strongSelf.cache.todoItems)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     extension TodoItemsTableView: DetailViewControllerDelegate {
         func delete(todoItem: TodoItem) {
             
-            DataManader.shared.networkingService.deleteTodoItem(todoItem) { isSuccess in
+            self.networkingService.deleteTodoItem(todoItem) { isSuccess in
                 if !isSuccess {
                     self.isDurty = true
                 }
@@ -264,7 +320,7 @@ class TodoItemsTableView: UITableView {
                 }
                 let cellIndex = IndexPath(row: index, section: 0)
                 reloadRows(at: [cellIndex], with: .automatic)
-                DataManader.shared.networkingService.changeTodoItem(todoItem) { isSucces in
+                self.networkingService.changeTodoItem(todoItem) { isSucces in
                     if !isSucces {
                         self.isDurty = true
                     }
@@ -274,7 +330,7 @@ class TodoItemsTableView: UITableView {
                 self.todoItems.insert(todoItem, at: 0)
                 let cellIndex = IndexPath(row: 0, section: 0)
                 insertRows(at: [cellIndex], with: .automatic)
-                DataManader.shared.networkingService.addTodoItem(todoItem) { isSuccess in
+                self.networkingService.addTodoItem(todoItem) { isSuccess in
                     if !isSuccess {
                         self.isDurty = true
                     }
@@ -293,5 +349,14 @@ extension TodoItemsTableView: HeaderViewDelegate {
     }
 }
 
+extension TodoItemsTableView: DefaultNetworkingServiceDelegate {
+    func updateData(todoItems: [TodoItem]) {
+        DispatchQueue.main.async {
+            self.todoItems = todoItems
+            self.reloadData()
+            self.isDurty = false
+        }
+    }
+}
 
 

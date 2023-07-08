@@ -81,8 +81,7 @@ class DetailViewController: UIViewController {
             }
     }
     
-    func setupTextView(){
-        
+    func setupTextView() {
         textView.text = todoItem?.text
         textView.textColor = UIColor.lightGray
         textView.layer.cornerRadius = 16
@@ -100,7 +99,6 @@ class DetailViewController: UIViewController {
         }
     }
 
-    
     private func addViews() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -137,9 +135,7 @@ class DetailViewController: UIViewController {
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 120),
-            
-            
+            textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 120)
         ])
     }
 

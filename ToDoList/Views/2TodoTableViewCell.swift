@@ -1,13 +1,13 @@
 //
-//  TodoTableViewCell.swift
+//  2TodoTableViewCell.swift
 //  ToDoList
 //
-//  Created by Лаванда on 26.06.2023.
+//  Created by Лаванда on 06.07.2023.
 //
 
 import UIKit
 
-class TodoTableViewCell: UITableViewCell {
+class TodoTableViewCell2: UITableViewCell {
     
         lazy var attributeString: NSMutableAttributedString = .init(string: todoTextLabel.text ?? "")
         var const: NSLayoutConstraint!
@@ -17,12 +17,6 @@ class TodoTableViewCell: UITableViewCell {
             view.contentMode = .scaleAspectFit
             return view
         }()
-    
-    let arrovView: UIImageView = {
-        let view = UIImageView()
-        view.image = UIImage(named: "chevron")
-        return view
-    }()
         
         let todoTextLabel: UILabel = {
             let label = UILabel()
@@ -80,6 +74,7 @@ class TodoTableViewCell: UITableViewCell {
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
+            accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             backgroundColor = Resources.Colors.secondaryBack
 
             addViews()
@@ -98,25 +93,21 @@ class TodoTableViewCell: UITableViewCell {
             todoHorizontalStack.addArrangedSubview(importanceView)
             todoHorizontalStack.addArrangedSubview(todoVerticalStack)
             addSubview(checkView)
-            addSubview(arrovView)
         }
         
         private func setConstraints() {
             checkView.translatesAutoresizingMaskIntoConstraints = false
             todoHorizontalStack.translatesAutoresizingMaskIntoConstraints = false
-            arrovView.translatesAutoresizingMaskIntoConstraints = false
             
             NSLayoutConstraint.activate([
                 checkView.centerYAnchor.constraint(equalTo: centerYAnchor),
                 checkView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
                 
                 todoHorizontalStack.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-                todoHorizontalStack.trailingAnchor.constraint(equalTo: arrovView.trailingAnchor, constant: -16),
+                todoHorizontalStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32),
                 todoHorizontalStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
-                todoHorizontalStack.leadingAnchor.constraint(equalTo: checkView.trailingAnchor, constant: 12),
+                todoHorizontalStack.leadingAnchor.constraint(equalTo: checkView.trailingAnchor, constant: 16),
                 
-                arrovView.centerYAnchor.constraint(equalTo: centerYAnchor),
-                arrovView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
                 
                 checkView.heightAnchor.constraint(equalToConstant: 24),
                 checkView.widthAnchor.constraint(equalToConstant: 24),
@@ -125,10 +116,7 @@ class TodoTableViewCell: UITableViewCell {
                 importanceView.widthAnchor.constraint(equalToConstant: 20),
                 
                 deadlineView.heightAnchor.constraint(equalToConstant: 16),
-                deadlineView.widthAnchor.constraint(equalToConstant: 16),
-                
-                arrovView.heightAnchor.constraint(equalToConstant: 12),
-                arrovView.widthAnchor.constraint(equalToConstant: 7)
+                deadlineView.widthAnchor.constraint(equalToConstant: 16)
             ])
         }
         
@@ -181,3 +169,4 @@ class TodoTableViewCell: UITableViewCell {
         }
 
     }
+

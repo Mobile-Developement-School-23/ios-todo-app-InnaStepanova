@@ -52,5 +52,6 @@ enum Resources {
         static let delete = "Удалить"
         static let placeholder = "Что нужно сделать"
         static let myTascks = "Мои дела"
+        static let baseURL = "https://beta.mrdekk.ru/todobackend/list"
     }
 }

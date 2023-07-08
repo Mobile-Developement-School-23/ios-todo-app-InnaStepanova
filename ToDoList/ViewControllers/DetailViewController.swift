@@ -58,6 +58,7 @@ class DetailViewController: UIViewController {
         view.backgroundColor = Resources.Colors.primaryBack
         scrollView.keyboardDismissMode = .interactive
         deleteButton.delegate = self
+        textView.delegate = self
         setupTextView()
         configureNavBar()
         addViews()
@@ -154,6 +155,10 @@ class DetailViewController: UIViewController {
             .font: Resources.Fonts.sfProText600(with: 17)]
         addNavBarButton(at: .left, and: Resources.Strings.cancel)
         addNavBarButton(at: .right, and: Resources.Strings.save)
+        
+        if textView.text == Resources.Strings.placeholder, textView.textColor == Resources.Colors.tertiary {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+        }
     }
     
     func setupKeyboardObserver() {
@@ -209,8 +214,10 @@ class DetailViewController: UIViewController {
                                isDone: todoItem?.isDone ?? false,
                                created: todoItem?.created ?? Date(),
                                changed: Date())
-        
-        delegate2.save(todoItem: newTodo)
+        if newTodo.id != todoItem?.id || newTodo.text != todoItem?.text || newTodo.importance != todoItem?.importance || newTodo.deadline != todoItem?.deadline {
+            print("НЕ ОДИНАКОВЫЕ")
+            delegate2.save(todoItem: newTodo)
+        }
         dismiss(animated: true)
     }
 }
@@ -225,16 +232,19 @@ extension DetailViewController: DeleteButtonDelegate {
 }
 
 extension DetailViewController: UITextViewDelegate {
+    
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        if textView.text == Resources.Strings.placeholder {
-            textView.text = ""
+        if textView.text == Resources.Strings.placeholder, textView.textColor == Resources.Colors.tertiary {
+            textView.text = nil
             textView.textColor = Resources.Colors.primaryLabel
+            navigationItem.rightBarButtonItem?.isEnabled = false
+            
         }
         return true
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        if textView.text == "" {
+        if textView.text == "" || textView.text == nil {
             navigationItem.rightBarButtonItem?.isEnabled = false
             deleteButton.configuration?.baseBackgroundColor = Resources.Colors.secondaryBack
             deleteButton.configuration?.baseForegroundColor = Resources.Colors.tertiary

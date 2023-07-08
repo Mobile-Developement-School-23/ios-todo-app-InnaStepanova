@@ -14,6 +14,7 @@ protocol HeaderViewDelegate {
 class HeaderView: UIView {
     
     var delegate: HeaderViewDelegate!
+    var actityIndicator = UIActivityIndicatorView()
     
     private var doneLabel: UILabel = {
         let label = UILabel()
@@ -55,15 +56,20 @@ class HeaderView: UIView {
         super.init(frame: frame)
         addSubview(doneLabel)
         addSubview(showButton)
+        addSubview(actityIndicator)
         backgroundColor = Resources.Colors.primaryBack
+        actityIndicator.hidesWhenStopped = true
         doneLabel.translatesAutoresizingMaskIntoConstraints = false
         showButton.translatesAutoresizingMaskIntoConstraints = false
+        actityIndicator.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             doneLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             showButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             doneLabel.centerYAnchor.constraint(equalTo: showButton.centerYAnchor),
             doneLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
-            doneLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8)
+            doneLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            actityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+            actityIndicator.trailingAnchor.constraint(equalTo: showButton.leadingAnchor, constant: -7)
         ])
     }
     

@@ -103,3 +103,12 @@ xcuserdata
 
 
 # End of https://www.toptal.com/developers/gitignore/api/swift,swiftpackagemanager,swiftpm,cocoapods
+DataManager.swift.orig
+DetailViewController_BACKUP_26231.swift
+DetailViewController_BACKUP_26364.swift
+DetailViewController_BASE_26231.swift
+DetailViewController_BASE_26364.swift
+DetailViewController_LOCAL_26231.swift
+DetailViewController_LOCAL_26364.swift
+DetailViewController_REMOTE_26231.swift
+DetailViewController_REMOTE_26364.swift

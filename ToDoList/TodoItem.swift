@@ -13,7 +13,7 @@ enum Importance: String {
     case high
 }
 
-struct TodoItem {
+struct TodoItem: Equatable {
     let id: String
     var text: String
     var importance: Importance
@@ -45,7 +45,7 @@ extension TodoItem {
         dict["id"] = id
         dict["text"] = text
         if importance != .normal {
-            dict["importance"] = importance.rawValue
+            dict["importance"] = "\(importance.rawValue)"
         }
         dict["isDone"] = isDone
         dict["created"] = created.timeIntervalSince1970
@@ -55,6 +55,31 @@ extension TodoItem {
         if let deadlineDate = deadline {
             dict["deadline"] = deadlineDate.timeIntervalSince1970
         }
+        return dict
+    }
+    
+    var jsonBack: [String: Any] {
+        var dict: [String: Any] = [:]
+        dict["id"] = id
+        dict["text"] = text
+        switch importance {
+            
+        case .low:
+            dict["importance"] = importance.rawValue
+        case .normal:
+            dict["importance"] = "basic"
+        case .high:
+            dict["importance"] = "important"
+        }
+        dict["done"] = isDone
+        dict["created_at"] = Int(created.timeIntervalSince1970)
+        if let changedDate = changed {
+            dict["changed_at"] = Int(changedDate.timeIntervalSince1970)
+        }
+        if let deadlineDate = deadline {
+            dict["deadline"] = Int(deadlineDate.timeIntervalSince1970)
+        }
+        dict["last_updated_by"] = "id device"
         return dict
     }
 
@@ -84,6 +109,42 @@ extension TodoItem {
                         created: Date(timeIntervalSince1970: createdTimestamp),
                         changed: changed)
     }
+    
+    static func parse(jsonBack: Any) -> TodoItem? {
+        guard let dict = jsonBack as? [String: Any],
+              let id = dict["id"] as? String,
+              let text = dict["text"] as? String,
+              let isDone = dict["done"] as? Bool,
+              let createdTimestamp = dict["created_at"] as? TimeInterval else {
+            return nil
+        }
+
+        let importanceString = dict["importance"] as? String
+        let importance: Importance
+        
+        switch importanceString {
+        case "low": importance = Importance.low
+        case "basic": importance = Importance.normal
+        case "important" : importance = Importance.high
+        case .none: importance = Importance.normal
+        case .some(_): importance = Importance.normal
+        }
+
+        let deadlineTimestamp = dict["deadline"] as? TimeInterval
+        let deadline = deadlineTimestamp.map({Date(timeIntervalSince1970: $0)})
+
+        let changedTimestamp = dict["changed_at"] as? TimeInterval
+        let changed = changedTimestamp.map({Date(timeIntervalSince1970: $0)})
+
+        return TodoItem(id: id,
+                        text: text,
+                        importance: importance,
+                        deadline: deadline,
+                        isDone: isDone,
+                        created: Date(timeIntervalSince1970: createdTimestamp),
+                        changed: changed)
+    }
+
 }
 
 extension TodoItem {

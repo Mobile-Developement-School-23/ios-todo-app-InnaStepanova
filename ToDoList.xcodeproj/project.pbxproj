@@ -251,8 +251,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 02C3EAAC2A386071001C14C4 /* Build configuration list for PBXNativeTarget "ToDoList" */;
 			buildPhases = (
-				02B5FD0A2A4DF2CE00B9D1E5 /* ShellScript */,
 				893AD0DC0B1BB376713F5CC7 /* [CP] Check Pods Manifest.lock */,
+				02B5FD0A2A4DF2CE00B9D1E5 /* ShellScript */,
 				02C3EA942A38606F001C14C4 /* Sources */,
 				02C3EA952A38606F001C14C4 /* Frameworks */,
 				02C3EA962A38606F001C14C4 /* Resources */,
@@ -371,8 +371,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "
-";
+			shellScript = "\n";
 			showEnvVarsInLog = 0;
 		};
 		893AD0DC0B1BB376713F5CC7 /* [CP] Check Pods Manifest.lock */ = {

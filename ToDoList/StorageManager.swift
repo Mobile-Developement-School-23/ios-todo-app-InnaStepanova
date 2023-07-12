@@ -11,7 +11,6 @@ import CoreData
 class StorageManager {
     
     private var persistentContainer: NSPersistentContainer = {
-        
         let container = NSPersistentContainer(name: "core")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
@@ -25,22 +24,18 @@ class StorageManager {
         return persistentContainer.viewContext
     }
     
-    private func transformToTodoItemData(_ todoItem: TodoItem) -> TodoItemData? {
-        guard let entityDescription = NSEntityDescription.entity(forEntityName: "TodoItemData", in: viewContax) else {
-            print ("No Entity Description in func Transform")
-            return nil
+    private func insert(_ todoItem: TodoItem) {
+        if let entityDescription = NSEntityDescription.entity(forEntityName: "TodoItemData", in: viewContax) {
+            let todoItemData = NSManagedObject(entity: entityDescription, insertInto: viewContax) as! TodoItemData
+            todoItemData.id = todoItem.id
+            todoItemData.text = todoItem.text
+            todoItemData.isDone = todoItem.isDone
+            todoItemData.created = todoItem.created
+            todoItemData.changed = todoItem.changed
+            todoItemData.importance = todoItem.importance.rawValue
+            todoItemData.deadline = todoItem.deadline
+            saveContex()
         }
-        
-        let todoItemData = NSManagedObject(entity: entityDescription, insertInto: viewContax) as! TodoItemData
-        todoItemData.id = todoItem.id
-        todoItemData.text = todoItem.text
-        todoItemData.isDone = todoItem.isDone
-        todoItemData.created = todoItem.created
-        todoItemData.changed = todoItem.changed
-        todoItemData.importance = todoItem.importance.rawValue
-        todoItemData.deadline = todoItem.deadline
-        
-        return todoItemData
     }
     
     func load() -> [TodoItemData] {
@@ -53,18 +48,52 @@ class StorageManager {
         }
     }
     
-    func insert(new todoItem: TodoItem) {
+    func edit(with todoItem: TodoItem) {
+        // Создаем запрос сущности, чтобы найти объект по его идентификатору
+        let fetchRequest: NSFetchRequest<TodoItemData> = TodoItemData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", todoItem.id)
         
+        do {
+            // Выполняем запрос и получаем массив найденных объектов
+            let fetchedEntities = try viewContax.fetch(fetchRequest)
+            
+            // Если найден объект, производим необходимые изменения
+            if let entity = fetchedEntities.first {
+                entity.text = todoItem.text
+                entity.isDone = todoItem.isDone
+                entity.created = todoItem.created
+                entity.changed = todoItem.changed
+                entity.importance = todoItem.importance.rawValue
+                entity.deadline = todoItem.deadline
+                saveContex()
+            } else {
+                print("Сущность не найдена")
+            }
+        } catch {
+            print("Ошибка при выполнении запроса: \(error)")
+        }
     }
-    
-    func edit(_ todoItem: TodoItem) {
-        
-        saveContex()
-    }
+
     
     func delete(_ todoItem: TodoItem) {
-        viewContax.delete(<#T##object: NSManagedObject##NSManagedObject#>)
-        saveContex()
+        // Создаем запрос сущности, чтобы найти объект по его идентификатору
+        let fetchRequest: NSFetchRequest<TodoItemData> = TodoItemData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", todoItem.id)
+        
+        do {
+            // Выполняем запрос и получаем массив найденных объектов
+            let fetchedEntities = try viewContax.fetch(fetchRequest)
+            
+            // Если найден объект, производим необходимые изменения
+            if let entity = fetchedEntities.first {
+                viewContax.delete(entity)
+               saveContex()
+            } else {
+                print("Сущность не найдена")
+            }
+        } catch {
+            print("Ошибка при выполнении запроса: \(error)")
+        }
     }
     
     func saveContex() {

@@ -255,6 +255,7 @@ extension DefaultNetworkingService {
                             if let tasks = tasks {
                             strongSelf.revision = tasks.revision
                             let todoItems = tasks.list.map { $0.toTodoItem }
+                                print("GET IN UPDATE \(todoItems.count)")
                             strongSelf.delegate.updateData(todoItems: todoItems)
                             }
                         }

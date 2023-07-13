@@ -17,6 +17,7 @@ class TodoItemsTableView: UITableView {
     
     var networkingService = DefaultNetworkingService()
     var cache = FileCache()
+    var storage = Storage()
     
     private var stateIsDone = false {
         didSet {
@@ -42,17 +43,19 @@ class TodoItemsTableView: UITableView {
     
     private var isDurty = false {
         didSet {
+            storage.saveIsDurtyToUserDefaults(value: isDurty)
             if isDurty {
                 print("IS DURTY TRUE")
                 DispatchQueue.main.async {
-                    self.headerView.actityIndicator.startAnimating()
+                    self.headerView.activityIndicator.startAnimating()
                 }
                 DispatchQueue.global(qos: .userInteractive).async {
                     self.networkingService.retryWithExponentialBackoff(delay: 2.0, retries: 0, list: self.todoItems)
                 }
             } else {
+                print("IS DURTY FALSE")
                 DispatchQueue.main.async {
-                    self.headerView.actityIndicator.stopAnimating()
+                    self.headerView.activityIndicator.stopAnimating()
                 }
             }
         }
@@ -62,11 +65,11 @@ class TodoItemsTableView: UITableView {
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
+        self.isDurty = storage.getIsDurtyFromUserDefaults()
         getData { todoItems in
             DispatchQueue.main.async {
                 self.todoItems = todoItems
                 self.reloadData()
-                self.headerView.actityIndicator.stopAnimating()
             }
         }
         networkingService.delegate = self
@@ -78,6 +81,7 @@ class TodoItemsTableView: UITableView {
         register(NewTaskTableViewCell.self, forCellReuseIdentifier: "newTask")
         headerView.delegate = self
         headerView.setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
+        headerView.activityIndicator.startAnimating()
        
     }
     
@@ -175,6 +179,9 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func doneTodoItem(at indexPath: IndexPath) {
+        DispatchQueue.main.async {
+            self.headerView.activityIndicator.startAnimating()
+        }
         let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
         var item = filtredTodoItems[indexPath.row]
         item.isDone = true
@@ -187,21 +194,19 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
         } else {
             self.deleteRows(at: [indexPath], with: .automatic)
         }
-        DispatchQueue.main.async {
-            self.headerView.actityIndicator.startAnimating()
-        }
         self.networkingService.changeTodoItem(item) { isSuccess in
             if !isSuccess {
                 self.isDurty = true
-            }
-            DispatchQueue.main.async {
-                self.headerView.actityIndicator.stopAnimating()
+            } else {
+                DispatchQueue.main.async {
+                    self.headerView.activityIndicator.stopAnimating()
+                }
             }
         }
     }
     
     func deleteTodoItem(at indexPath: IndexPath) {
-        
+        self.headerView.activityIndicator.startAnimating()
         let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
         let item = filtredTodoItems[indexPath.row]
         self.cache.delete(item)
@@ -213,6 +218,10 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
         self.networkingService.deleteTodoItem(item) { isSuccess in
             if !isSuccess {
                 self.isDurty = true
+            } else {
+                DispatchQueue.main.async {
+                    self.headerView.activityIndicator.stopAnimating()
+                }
             }
         }
     }
@@ -258,10 +267,7 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
         var todoItemsCache: [TodoItem] = []
         DispatchQueue.global(qos: .userInteractive).async {
             todoItemsCache = self.cache.load()
-        }
-        
-        DispatchQueue.main.async {
-            self.headerView.actityIndicator.startAnimating()
+            self.todoItems = todoItemsCache
         }
         networkingService.fetchTodoItems { [weak self] result in
             guard let strongSelf = self else { return }
@@ -269,6 +275,9 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
             case.failure(_) :
                 print("не удалось получить данные из сети, загрузка данных из файла")
                 completion(todoItemsCache)
+                DispatchQueue.global(qos: .userInteractive).async {
+                    strongSelf.networkingService.retryWithExponentialBackoff(delay: 2.0, retries: 0, list: strongSelf.todoItems)
+                }
                 
             case .success((let data, let responce)) :
                 print("RESPONCE \(responce)")
@@ -280,9 +289,15 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
                             let todoItems = tasks.list.map { $0.toTodoItem }
                             print("TODOITEMS после DECODE \(todoItems)")
                             completion(todoItems)
+                            DispatchQueue.main.async {
+                                self?.headerView.activityIndicator.stopAnimating()
+                            }
                         } catch {
                             print("Не удалось декодировать данные")
                             completion(todoItemsCache)
+                            DispatchQueue.global(qos: .userInteractive).async {
+                                strongSelf.networkingService.retryWithExponentialBackoff(delay: 2.0, retries: 0, list: strongSelf.todoItems)
+                            }
                     }
                 }
             }
@@ -294,10 +309,17 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
     extension TodoItemsTableView: DetailViewControllerDelegate {
         
         func delete(todoItem: TodoItem) {
+            DispatchQueue.main.async {
+                self.headerView.activityIndicator.startAnimating()
+            }
             self.cache.delete(todoItem)
             self.networkingService.deleteTodoItem(todoItem) { isSuccess in
                 if !isSuccess {
                     self.isDurty = true
+                } else {
+                    DispatchQueue.main.async {
+                        self.headerView.activityIndicator.stopAnimating()
+                    }
                 }
             }
             
@@ -312,6 +334,7 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
         }
 
         func save(todoItem: TodoItem) {
+            self.headerView.activityIndicator.startAnimating()
             let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
             if let index = filtredTodoItems.firstIndex(where: { $0.id == todoItem.id }) {
                 self.cache.edit(with: todoItem)
@@ -323,6 +346,10 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
                 self.networkingService.changeTodoItem(todoItem) { isSucces in
                     if !isSucces {
                         self.isDurty = true
+                    } else {
+                        DispatchQueue.main.async {
+                            self.headerView.activityIndicator.stopAnimating()
+                        }
                     }
                 }
                 
@@ -334,6 +361,10 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
                 self.networkingService.addTodoItem(todoItem) { isSuccess in
                     if !isSuccess {
                         self.isDurty = true
+                    } else {
+                        DispatchQueue.main.async {
+                            self.headerView.activityIndicator.stopAnimating()
+                        }
                     }
                 }
             }

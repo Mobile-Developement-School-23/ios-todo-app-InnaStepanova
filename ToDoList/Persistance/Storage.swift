@@ -6,3 +6,14 @@
 //
 
 import Foundation
+
+class Storage {
+    
+    func saveIsDurtyToUserDefaults(value: Bool) {
+        UserDefaults.standard.set(value, forKey: "isDurty")
+    }
+
+    func getIsDurtyFromUserDefaults() -> Bool {
+        return UserDefaults.standard.bool(forKey: "isDurty")
+    }
+}

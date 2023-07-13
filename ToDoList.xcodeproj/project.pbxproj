@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		027317F72A5F2098009950CA /* TodoData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 027317F52A5F2098009950CA /* TodoData.xcdatamodeld */; };
+		027317F72A5F2098009950CA /* TodoItemData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 027317F52A5F2098009950CA /* TodoItemData.xcdatamodeld */; };
 		027317F92A5F23A4009950CA /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027317F82A5F23A4009950CA /* StorageManager.swift */; };
 		028A66C42A49B6DA000B4CEF /* MyTasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028A66C32A49B6D9000B4CEF /* MyTasksViewController.swift */; };
 		028A66C82A49CF65000B4CEF /* TodoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028A66C72A49CF65000B4CEF /* TodoTableViewCell.swift */; };
@@ -210,7 +210,7 @@
 				02C3EAA92A386071001C14C4 /* Info.plist */,
 				0293474A2A404E9B00FEBCD0 /* Colors.xcassets */,
 				02D687C62A540EC300451A0B /* ext + URLSession.swift */,
-				027317F52A5F2098009950CA /* TodoData.xcdatamodeld */,
+				027317F52A5F2098009950CA /* TodoItemData.xcdatamodeld */,
 				027317F82A5F23A4009950CA /* StorageManager.swift */,
 			);
 			path = ToDoList;
@@ -371,7 +371,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n";
+			shellScript = "
+";
 			showEnvVarsInLog = 0;
 		};
 		893AD0DC0B1BB376713F5CC7 /* [CP] Check Pods Manifest.lock */ = {
@@ -437,7 +438,7 @@
 				029347552A407A6F00FEBCD0 /* ImportanceView.swift in Sources */,
 				029347482A404CAA00FEBCD0 /* Resources.swift in Sources */,
 				028A66C82A49CF65000B4CEF /* TodoTableViewCell.swift in Sources */,
-				027317F72A5F2098009950CA /* TodoData.xcdatamodeld in Sources */,
+				027317F72A5F2098009950CA /* TodoItemData.xcdatamodeld in Sources */,
 				02C3EAB22A389468001C14C4 /* FileCache.swift in Sources */,
 				02D687C92A541E8700451A0B /* NetworkingService.swift in Sources */,
 				02D687CB2A541EB300451A0B /* DefaultNetworkingService.swift in Sources */,
@@ -739,13 +740,13 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		027317F52A5F2098009950CA /* TodoData.xcdatamodeld */ = {
+		027317F52A5F2098009950CA /* TodoItemData.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				027317F62A5F2098009950CA /* TodoData.xcdatamodel */,
 			);
 			currentVersion = 027317F62A5F2098009950CA /* TodoData.xcdatamodel */;
-			path = TodoData.xcdatamodeld;
+			path = TodoItemData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

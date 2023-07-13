@@ -48,10 +48,6 @@ class TodoItemsTableView: UITableView {
                     self.headerView.actityIndicator.startAnimating()
                 }
                 DispatchQueue.global(qos: .userInteractive).async {
-                    for todo in self.todoItems {
-                        self.cache.add(todoItem: todo)
-                    }
-                    self.cache.saveTodoItems(to: "cache")
                     self.networkingService.retryWithExponentialBackoff(delay: 2.0, retries: 0, list: self.todoItems)
                 }
             } else {
@@ -182,6 +178,7 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
         let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
         var item = filtredTodoItems[indexPath.row]
         item.isDone = true
+        self.cache.edit(with: item)
         if let index = self.todoItems.firstIndex(where: { $0.id == item.id }) {
             self.todoItems[index] = item
         }
@@ -207,6 +204,7 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
         
         let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
         let item = filtredTodoItems[indexPath.row]
+        self.cache.delete(item)
         if let index = self.todoItems.firstIndex(where: { $0.id == item.id }) {
             self.todoItems.remove(at: index)
         }
@@ -257,23 +255,25 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
     
     
     func getData(completion: @escaping ([TodoItem]) -> Void) {
+        var todoItemsCache: [TodoItem] = []
+        DispatchQueue.global(qos: .userInteractive).async {
+            todoItemsCache = self.cache.load()
+        }
+        
         DispatchQueue.main.async {
             self.headerView.actityIndicator.startAnimating()
         }
         networkingService.fetchTodoItems { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
-            case.failure(let error) :
+            case.failure(_) :
                 print("не удалось получить данные из сети, загрузка данных из файла")
-                DispatchQueue.global(qos: .userInteractive).async {
-                    strongSelf.cache.loadTodoItems(json: "cache")
-                    completion(strongSelf.cache.todoItems)
-                }
+                completion(todoItemsCache)
+                
             case .success((let data, let responce)) :
                 print("RESPONCE \(responce)")
                 guard let response = responce as? HTTPURLResponse else { return }
                 if response.statusCode == 200 {
-                    if data != nil {
                         do {
                             let tasks = try JSONDecoder().decode(TasksBack.self, from: data)
                             strongSelf.networkingService.revision = tasks.revision
@@ -282,11 +282,7 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
                             completion(todoItems)
                         } catch {
                             print("Не удалось декодировать данные")
-                            DispatchQueue.global(qos: .userInteractive).async {
-                                strongSelf.cache.loadTodoItems(json: "cache")
-                                completion(strongSelf.cache.todoItems)
-                            }
-                        }
+                            completion(todoItemsCache)
                     }
                 }
             }
@@ -294,10 +290,11 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-
+//MARK: - Work with methods DetailViewControllerDelegate
     extension TodoItemsTableView: DetailViewControllerDelegate {
+        
         func delete(todoItem: TodoItem) {
-            
+            self.cache.delete(todoItem)
             self.networkingService.deleteTodoItem(todoItem) { isSuccess in
                 if !isSuccess {
                     self.isDurty = true
@@ -317,6 +314,7 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
         func save(todoItem: TodoItem) {
             let filtredTodoItems = self.stateIsDone ? self.todoItems : self.todoItems.filter { $0.isDone == false }
             if let index = filtredTodoItems.firstIndex(where: { $0.id == todoItem.id }) {
+                self.cache.edit(with: todoItem)
                 if let index = self.todoItems.firstIndex(where: { $0.id == todoItem.id }) {
                     self.todoItems[index] = todoItem
                 }
@@ -329,6 +327,7 @@ extension TodoItemsTableView: UITableViewDelegate, UITableViewDataSource {
                 }
                 
             } else {
+                self.cache.insert(todoItem)
                 self.todoItems.insert(todoItem, at: 0)
                 let cellIndex = IndexPath(row: 0, section: 0)
                 insertRows(at: [cellIndex], with: .automatic)

@@ -4,8 +4,102 @@
 //
 //  Created by Лаванда on 13.06.2023.
 import Foundation
+import CoreData
+
 class FileCache {
     private(set) var todoItems: [TodoItem] = []
+    private(set) var todoItemsData: [TodoItemData] = []
+    
+    private var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "TodoItemData")
+        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        })
+        return container
+    }()
+    
+    private var viewContax: NSManagedObjectContext {
+        return persistentContainer.viewContext
+    }
+}
+// MARK: - Work with CoreData
+extension FileCache {
+    
+    func saveContex() {
+        if viewContax.hasChanges {
+            do {
+                try viewContax.save()
+            } catch {
+             let nsError = error as NSError
+            fatalError("Unresolved error \(nsError)")
+            }
+        }
+    }
+    
+    func load() -> [TodoItem] {
+        let fetchRequest: NSFetchRequest<TodoItemData> = TodoItemData.fetchRequest()
+        do {
+            let todoItemsData = try viewContax.fetch(fetchRequest)
+            let todoItems = todoItemsData.compactMap { TodoItem.transform(todoItemData: $0)}
+            self.todoItemsData = todoItemsData
+            return todoItems
+        } catch {
+            print("Failed to fetch data, \(error)")
+            return []
+        }
+    }
+    
+    func insert(_ todoItem: TodoItem) {
+        if let entityDescription = NSEntityDescription.entity(forEntityName: "TodoItemData", in: viewContax) {
+            let todoItemData = NSManagedObject(entity: entityDescription, insertInto: viewContax) as! TodoItemData
+            todoItemData.id = todoItem.id
+            todoItemData.text = todoItem.text
+            todoItemData.isDone = todoItem.isDone
+            todoItemData.created = todoItem.created
+            todoItemData.changed = todoItem.changed
+            todoItemData.importance = todoItem.importance.rawValue
+            todoItemData.deadline = todoItem.deadline
+            self.todoItemsData.append(todoItemData)
+            saveContex()
+        }
+    }
+    
+    func edit(with todoItem: TodoItem) {
+        if let todoItemData = getTodoItemData(todoItem) {
+            todoItemData.text = todoItem.text
+            todoItemData.isDone = todoItem.isDone
+            todoItemData.created = todoItem.created
+            todoItemData.changed = todoItem.changed
+            todoItemData.importance = todoItem.importance.rawValue
+            todoItemData.deadline = todoItem.deadline
+            saveContex()
+        } else {
+            insert(todoItem)
+        }
+    }
+
+    
+    func delete(_ todoItem: TodoItem) {
+        if let todoItemData = getTodoItemData(todoItem) {
+            self.todoItemsData.remove(at: todoItemsData.firstIndex(where: { $0.id == todoItemData.id })!)
+            viewContax.delete(todoItemData)
+            saveContex()
+        }
+    }
+    
+    private func getTodoItemData(_ todoItem: TodoItem) -> TodoItemData? {
+        if let todoItemsData = todoItemsData.first(where: { $0.id == todoItem.id }) {
+            return todoItemsData
+        } else {
+            return nil
+        }
+    }
+}
+
+// MARK: - Work with file
+extension FileCache {
     func add(todoItem: TodoItem) {
         if let index = todoItems.firstIndex(where: { $0.id == todoItem.id }) {
             todoItems[index] = todoItem
@@ -48,6 +142,11 @@ class FileCache {
         }
     }
 
+}
+
+// MARK: - Work with CSV file
+extension FileCache {
+    
     func saveCSVTodoItems(to file: String) {
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let filePath = directory.appendingPathComponent("\(file).csv")

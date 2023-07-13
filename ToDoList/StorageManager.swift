@@ -38,10 +38,12 @@ class StorageManager {
         }
     }
     
-    func load() -> [TodoItemData] {
+    func load() -> [TodoItem] {
         let fetchRequest: NSFetchRequest<TodoItemData> = TodoItemData.fetchRequest()
         do {
-            return try viewContax.fetch(fetchRequest)
+            let todoItemData = try viewContax.fetch(fetchRequest)
+            let todoItem = todoItemData.compactMap { TodoItem.transform(todoItemData: $0)}
+            return todoItem
         } catch {
             print("Failed to fetch data, \(error)")
             return []

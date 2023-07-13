@@ -227,9 +227,8 @@ extension DefaultNetworkingService: NetworkingService {
 
 }
 
+//MARK: - Retry
 extension DefaultNetworkingService {
-    //    Retry
-    
     func retryWithExponentialBackoff(delay: Double, retries: Int, list: [TodoItem]) {
         print("RETRY \(retries)")
         

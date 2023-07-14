@@ -14,7 +14,7 @@ protocol HeaderViewDelegate {
 class HeaderView: UIView {
     
     var delegate: HeaderViewDelegate!
-    var actityIndicator = UIActivityIndicatorView()
+    var activityIndicator = UIActivityIndicatorView()
     
     private var doneLabel: UILabel = {
         let label = UILabel()
@@ -34,42 +34,24 @@ class HeaderView: UIView {
         return button
     }()
     
-//    init(stateIsDone: Bool, qtyIsDone: Int) {
-//        super.init(frame: .zero)
-//
-//        addSubview(doneLabel)
-//        addSubview(showButton)
-//        backgroundColor = Resources.Colors.primaryBack
-//        doneLabel.translatesAutoresizingMaskIntoConstraints = false
-//        showButton.translatesAutoresizingMaskIntoConstraints = false
-//        NSLayoutConstraint.activate([
-//            doneLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-//            showButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-//            doneLabel.centerYAnchor.constraint(equalTo: showButton.centerYAnchor),
-//            doneLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
-//            doneLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8)
-//        ])
-//        setHeader(stateIsDone: stateIsDone, isDoneCount: qtyIsDone)
-//    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(doneLabel)
         addSubview(showButton)
-        addSubview(actityIndicator)
+        addSubview(activityIndicator)
         backgroundColor = Resources.Colors.primaryBack
-        actityIndicator.hidesWhenStopped = true
+        activityIndicator.hidesWhenStopped = true
         doneLabel.translatesAutoresizingMaskIntoConstraints = false
         showButton.translatesAutoresizingMaskIntoConstraints = false
-        actityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             doneLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             showButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             doneLabel.centerYAnchor.constraint(equalTo: showButton.centerYAnchor),
             doneLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
             doneLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
-            actityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
-            actityIndicator.trailingAnchor.constraint(equalTo: showButton.leadingAnchor, constant: -7)
+            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+            activityIndicator.trailingAnchor.constraint(equalTo: showButton.leadingAnchor, constant: -7)
         ])
     }
     
@@ -81,11 +63,25 @@ class HeaderView: UIView {
     }
     
     func setHeader(stateIsDone: Bool, isDoneCount: Int) {
-        if stateIsDone {
-            showButton.setTitle("Скрыть", for: .normal)
-        } else {
-            showButton.setTitle("Показать", for: .normal)
+        DispatchQueue.main.async {
+            if stateIsDone {
+                self.showButton.setTitle("Скрыть", for: .normal)
+            } else {
+                self.showButton.setTitle("Показать", for: .normal)
+            }
+            self.doneLabel.text = "Выполнено — \(isDoneCount)"
         }
-        doneLabel.text = "Выполнено — \(isDoneCount)"
+    }
+    
+    func stopAnimating() {
+        DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+        }
+    }
+    
+    func startAnimating() {
+        DispatchQueue.main.async {
+            self.activityIndicator.startAnimating()
+        }
     }
 }

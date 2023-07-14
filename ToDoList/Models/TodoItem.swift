@@ -197,3 +197,17 @@ extension TodoItem {
             return TodoItem(id: id, text: text, importance: importance, deadline: deadline, isDone: isDone, created: created, changed: changed)
         }
 }
+//: MARK - TodoItem + CoreData
+extension TodoItem {
+    static func transform(todoItemData: TodoItemData) -> TodoItem {
+        let importance = Importance(rawValue: todoItemData.importance!)
+
+        return TodoItem(id: todoItemData.id!,
+                        text: todoItemData.text!,
+                        importance: importance ?? Importance.normal,
+                        deadline: todoItemData.deadline,
+                        isDone: todoItemData.isDone,
+                        created: todoItemData.created!,
+                        changed: todoItemData.changed)
+    }
+}
